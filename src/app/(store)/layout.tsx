@@ -1,13 +1,15 @@
 import Header from '@/components/header'
-import { ReactNode } from 'react'
+import HeaderSkeleton from '@/components/header-skeleton'
+
+import { ReactNode, Suspense } from 'react'
 
 export default function StoreLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="mx-auto grid min-h-screen w-full max-w-[1600px] grid-rows-app gap-5 p-8">
-      <div>
+    <div className="p-8">
+      <Suspense fallback={<HeaderSkeleton />}>
         <Header />
-        {children}
-      </div>
+      </Suspense>
+      {children}
     </div>
   )
 }

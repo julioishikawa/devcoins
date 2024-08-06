@@ -7,7 +7,7 @@ export function UserAvatar() {
         src="https://github.com/julioishikawa.png"
         alt="@julioishikawa photo"
       />
-      <AvatarFallback>CN</AvatarFallback>
+      <AvatarFallback className="bg-zinc-700"></AvatarFallback>
     </Avatar>
   )
 }

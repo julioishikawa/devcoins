@@ -1,5 +1,4 @@
 import * as React from 'react'
-
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Carousel,
@@ -15,10 +14,10 @@ export function CoinCarousel() {
       opts={{
         align: 'start',
       }}
-      className="w-full max-w-md"
+      className="max-w-md"
     >
       <CarouselContent>
-        {Array.from({ length: 5 }).map((_, index) => (
+        {Array.from({ length: 9 }).map((_, index) => (
           <CarouselItem
             key={index}
             className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
@@ -35,8 +34,8 @@ export function CoinCarousel() {
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious className="bg-black border-none" />
-      <CarouselNext className="bg-black border-none" />
+      <CarouselPrevious className="bg-zinc-800 border-none" />
+      <CarouselNext className="bg-zinc-800 border-none" />
     </Carousel>
   )
 }
