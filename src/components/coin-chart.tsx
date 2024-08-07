@@ -133,9 +133,9 @@ export function CoinChart() {
   return (
     <div className="space-y-4">
       {loading ? (
-        <Skeleton className="w-96 h-6 rounded-md" />
+        <Skeleton className="w-full h-6 rounded-md" />
       ) : (
-        <h1>Gráficos das cryptomoedas nos últimos 7 dias</h1>
+        <h1>Cryptomoedas nos últimos 7 dias</h1>
       )}
 
       <div className="inline-flex gap-4 h-10 rounded-md">

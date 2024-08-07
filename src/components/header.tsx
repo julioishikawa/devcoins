@@ -7,7 +7,7 @@ export default async function Header() {
 
   return (
     <div className="flex items-center gap-5">
-      <h1>logo</h1>
+      <h1 className="px-10">logo</h1>
 
       <SearchInput />
 

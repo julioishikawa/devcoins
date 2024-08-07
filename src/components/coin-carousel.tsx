@@ -8,19 +8,21 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel'
 
-export function CoinCarousel() {
+export async function CoinCarousel() {
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+
   return (
     <Carousel
       opts={{
         align: 'start',
       }}
-      className="max-w-md"
+      className="w-full lg:w-[1000px]"
     >
       <CarouselContent>
         {Array.from({ length: 9 }).map((_, index) => (
           <CarouselItem
             key={index}
-            className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
+            className="basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6"
           >
             <div className="p-2 border-none">
               <Card className="border-none bg-zinc-800">
