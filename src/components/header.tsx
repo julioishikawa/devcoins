@@ -1,6 +1,8 @@
+import { signOut } from 'next-auth/react'
 import { SearchInput } from './search-input'
 import { UserAvatar } from './user-avatar'
 import { LogOut } from 'lucide-react'
+import LogoutButton from './logout-button'
 
 export default async function Header() {
   await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -13,7 +15,7 @@ export default async function Header() {
 
       <UserAvatar />
 
-      <LogOut className="cursor-pointer" />
+      <LogoutButton />
     </div>
   )
 }
