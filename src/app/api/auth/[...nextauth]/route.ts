@@ -1,6 +1,5 @@
 import NextAuth, { User } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import GoogleProvider from 'next-auth/providers/google'
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import { PrismaAdapter } from '@/lib/auth/prisma-adapter'
@@ -29,13 +28,10 @@ const authOptions = NextAuth({
         if (user && (await bcrypt.compare(password, user.password))) {
           const { id, username, name, email, is_admin } = user
           return { id, username, name, email, is_admin } as User
+        } else {
+          throw new Error('Username or password is incorrect')
         }
-        return null
       },
-    }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
   pages: {
@@ -53,6 +49,7 @@ const authOptions = NextAuth({
         token.username = user.username
         token.is_admin = user.is_admin
       }
+
       return token
     },
 
@@ -62,35 +59,47 @@ const authOptions = NextAuth({
         name: token.name as string,
         email: token.email as string,
         username: token.username as string,
-        password: token.password as string,
         is_admin: token.is_admin as boolean,
       }
       return session
     },
 
     async signIn({ user }) {
-      const sessionToken = randomBytes(32).toString('hex')
-      const sessionExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
-
-      await prisma.session.create({
-        data: {
+      const existingSession = await prisma.session.findFirst({
+        where: {
           user_id: user.id,
-          session_token: sessionToken,
-          expires: sessionExpires,
+          expires: {
+            gt: new Date(),
+          },
         },
       })
 
+      let sessionToken
+
+      if (existingSession) {
+        sessionToken = existingSession.session_token
+        await prisma.session.update({
+          where: {
+            id: existingSession.id,
+          },
+          data: {
+            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          },
+        })
+      } else {
+        sessionToken = randomBytes(32).toString('hex')
+        const sessionExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+
+        await prisma.session.create({
+          data: {
+            user_id: user.id,
+            session_token: sessionToken,
+            expires: sessionExpires,
+          },
+        })
+      }
+
       return true
-    },
-  },
-  cookies: {
-    sessionToken: {
-      name: `@devcoins:userId`,
-      options: {
-        httpOnly: false,
-        path: '/',
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      },
     },
   },
 })

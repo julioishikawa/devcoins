@@ -1,21 +1,21 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 export default function SignUp() {
   const [username, setUsername] = useState('')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
+
+  const router = useRouter()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    // Limpar mensagens de erro ou sucesso
-    setError('')
-    setSuccess('')
+    toast.dismiss()
 
     try {
       const response = await fetch('/api/register', {
@@ -32,21 +32,18 @@ export default function SignUp() {
         throw new Error(data.error || 'Error creating user')
       }
 
-      setSuccess('User created successfully!')
-      // Redirecionar ou limpar o formulário conforme necessário
+      toast.success('User created successfully!')
+      router.push('/login')
     } catch (error: any) {
-      setError(error.message)
+      toast.error(error.message)
     }
   }
 
   return (
-    <div className="mx-auto p-6 bg-black border-2 shadow-lg rounded-lg">
+    <div className="flex flex-col items-center p-7 bg-zinc-900 border-2 shadow-lg rounded-lg">
       <h2 className="text-2xl font-semibold text-gray-100 text-center mb-6">
         Sign Up
       </h2>
-
-      {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-      {success && <p className="text-green-500 text-center mb-4">{success}</p>}
 
       <form onSubmit={handleSubmit} className="w-[350px]">
         <div className="mb-4">
@@ -54,12 +51,12 @@ export default function SignUp() {
             Username
           </label>
           <input
-            id="name"
+            id="username"
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg text-gray-900 focus:outline-none focus:ring focus:ring-gray-500"
-            placeholder="Your Name"
+            placeholder="Your Username"
           />
         </div>
 
@@ -109,9 +106,18 @@ export default function SignUp() {
           type="submit"
           className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-300"
         >
-          Sign Up
+          Registrar
         </button>
       </form>
+
+      <button
+        className="font-semibold text-gray-100 hover:text-gray-300 mt-6"
+        onClick={() => {
+          router.push('/login')
+        }}
+      >
+        Já tem uma conta?
+      </button>
     </div>
   )
 }
