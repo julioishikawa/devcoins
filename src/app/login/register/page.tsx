@@ -9,6 +9,7 @@ export default function SignUp() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
 
   const router = useRouter()
 
@@ -23,16 +24,22 @@ export default function SignUp() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, name, email, password }),
+        body: JSON.stringify({
+          username,
+          name,
+          email,
+          password,
+          confirmPassword,
+        }),
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Error creating user')
+        throw new Error(data.error || 'Erro ao criar usuário')
       }
 
-      toast.success('User created successfully!')
+      toast.success('Usuário criado com sucesso!')
       router.push('/login')
     } catch (error: any) {
       toast.error(error.message)
@@ -56,7 +63,7 @@ export default function SignUp() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg text-gray-900 focus:outline-none focus:ring focus:ring-gray-500"
-            placeholder="Your Username"
+            placeholder="Escolha seu username"
           />
         </div>
 
@@ -70,7 +77,7 @@ export default function SignUp() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg text-gray-900 focus:outline-none focus:ring focus:ring-gray-500"
-            placeholder="Your Name"
+            placeholder="Seu nome"
           />
         </div>
 
@@ -84,7 +91,7 @@ export default function SignUp() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg text-gray-900 focus:outline-none focus:ring focus:ring-gray-500"
-            placeholder="you@example.com"
+            placeholder="lorem@email.com"
           />
         </div>
 
@@ -97,6 +104,20 @@ export default function SignUp() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-3 py-2 border rounded-lg text-gray-900 focus:outline-none focus:ring focus:ring-gray-500"
+            placeholder="********"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-gray-100 mb-2" htmlFor="confirmPassword">
+            Confirm Password
+          </label>
+          <input
+            id="confirmPassword"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg text-gray-900 focus:outline-none focus:ring focus:ring-gray-500"
             placeholder="********"
           />

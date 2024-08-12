@@ -12,5 +12,10 @@ export default function LogoutButton() {
     router.push('/login')
   }
 
-  return <LogOut className="cursor-pointer" onClick={handleLogout} />
+  return (
+    <LogOut
+      className="cursor-pointer text-zinc-500 hover:text-zinc-300"
+      onClick={handleLogout}
+    />
+  )
 }

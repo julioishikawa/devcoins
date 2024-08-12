@@ -1,19 +1,22 @@
-import NextAuth, { User } from 'next-auth'
+import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import { PrismaAdapter } from '@/lib/auth/prisma-adapter'
 import { randomBytes } from 'crypto'
+import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextAuthOptions } from 'next-auth'
+import type { User, Session } from 'next-auth'
 
 const prisma = new PrismaClient()
 
-const authOptions = NextAuth({
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(),
   providers: [
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        username: { label: 'Username', type: 'text', placeholder: 'Username' },
+        username: { label: 'Username', type: 'text' },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
@@ -29,7 +32,7 @@ const authOptions = NextAuth({
           const { id, username, name, email, is_admin } = user
           return { id, username, name, email, is_admin } as User
         } else {
-          throw new Error('Username or password is incorrect')
+          throw new Error('Username ou Senha incorreta')
         }
       },
     }),
@@ -102,6 +105,12 @@ const authOptions = NextAuth({
       return true
     },
   },
-})
+}
 
-export { authOptions as GET, authOptions as POST }
+export async function GET(req: NextApiRequest, res: NextApiResponse) {
+  return NextAuth(req, res, authOptions)
+}
+
+export async function POST(req: NextApiRequest, res: NextApiResponse) {
+  return NextAuth(req, res, authOptions)
+}

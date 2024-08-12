@@ -117,7 +117,6 @@ export function CoinChart() {
   }, [])
 
   useEffect(() => {
-    // Carregar dados do Bitcoin ao montar o componente
     async function loadInitialData() {
       const daily = await fetchDailyData(selectedCoin)
       const hourly = await fetchHourlyData(selectedCoin)
@@ -128,7 +127,7 @@ export function CoinChart() {
     }
 
     loadInitialData()
-  }, [])
+  }, [selectedCoin])
 
   return (
     <div className="space-y-4">
@@ -143,7 +142,7 @@ export function CoinChart() {
           <Skeleton className="w-[93px] h-10 rounded-md" />
         ) : (
           <Select onValueChange={handleSelectChange} value={selectedCoin}>
-            <SelectTrigger className="bg-black border-none">
+            <SelectTrigger className="bg-zinc-800 border-none">
               <SelectValue placeholder="Selecione uma moeda" />
             </SelectTrigger>
             <SelectContent>
@@ -167,7 +166,7 @@ export function CoinChart() {
             onValueChange={(value) => setChartType(value as 'bar' | 'line')}
             value={chartType}
           >
-            <SelectTrigger className="bg-black border-none ">
+            <SelectTrigger className="bg-zinc-800 border-none ">
               <SelectValue placeholder="Selecione o gráfico" />
             </SelectTrigger>
             <SelectContent>
