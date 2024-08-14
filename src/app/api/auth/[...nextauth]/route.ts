@@ -3,10 +3,8 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import { PrismaAdapter } from '@/lib/auth/prisma-adapter'
-import { randomBytes } from 'crypto'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import type { NextAuthOptions } from 'next-auth'
-import type { User, Session } from 'next-auth'
 
 const prisma = new PrismaClient()
 
@@ -30,7 +28,7 @@ export const authOptions: NextAuthOptions = {
 
         if (user && (await bcrypt.compare(password, user.password))) {
           const { id, username, name, email, is_admin } = user
-          return { id, username, name, email, is_admin } as User
+          return { id, username, name, email, is_admin }
         } else {
           throw new Error('Username ou Senha incorreta')
         }
@@ -42,6 +40,23 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: 'jwt',
+    maxAge: 1 * 24 * 60 * 60, // Token expira em 1 dias
+  },
+  jwt: {
+    secret: process.env.NEXTAUTH_SECRET,
+    maxAge: 1 * 24 * 60 * 60, // Token expira em 1 dias
+  },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 1 * 24 * 60 * 60, // Cookie expira 1 dias
+      },
+    },
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -52,7 +67,6 @@ export const authOptions: NextAuthOptions = {
         token.username = user.username
         token.is_admin = user.is_admin
       }
-
       return token
     },
 
@@ -64,45 +78,8 @@ export const authOptions: NextAuthOptions = {
         username: token.username as string,
         is_admin: token.is_admin as boolean,
       }
+
       return session
-    },
-
-    async signIn({ user }) {
-      const existingSession = await prisma.session.findFirst({
-        where: {
-          user_id: user.id,
-          expires: {
-            gt: new Date(),
-          },
-        },
-      })
-
-      let sessionToken
-
-      if (existingSession) {
-        sessionToken = existingSession.session_token
-        await prisma.session.update({
-          where: {
-            id: existingSession.id,
-          },
-          data: {
-            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-          },
-        })
-      } else {
-        sessionToken = randomBytes(32).toString('hex')
-        const sessionExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-
-        await prisma.session.create({
-          data: {
-            user_id: user.id,
-            session_token: sessionToken,
-            expires: sessionExpires,
-          },
-        })
-      }
-
-      return true
     },
   },
 }

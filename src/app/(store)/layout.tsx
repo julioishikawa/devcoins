@@ -5,7 +5,7 @@ import { ReactNode, Suspense } from 'react'
 
 export default function StoreLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="p-8">
+    <div>
       <Suspense fallback={<HeaderSkeleton />}>
         <Header />
       </Suspense>

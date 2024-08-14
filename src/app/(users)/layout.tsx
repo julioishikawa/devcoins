@@ -1,8 +1,15 @@
-'use client'
+import Header from '@/components/header'
+import HeaderSkeleton from '@/components/header-skeleton'
+import { ReactNode, Suspense } from 'react'
 
-import { SessionProvider } from 'next-auth/react'
-import { ReactNode } from 'react'
+export default function UsersLayout({ children }: { children: ReactNode }) {
+  return (
+    <div>
+      <Suspense fallback={<HeaderSkeleton />}>
+        <Header />
+      </Suspense>
 
-export default function RootLayout({ children }: { children: ReactNode }) {
-  return <SessionProvider>{children}</SessionProvider>
+      {children}
+    </div>
+  )
 }

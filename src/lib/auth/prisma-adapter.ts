@@ -1,16 +1,17 @@
 import { Adapter } from 'next-auth/adapters'
 import { prisma } from '../prisma'
+import bcrypt from 'bcrypt'
 
 export function PrismaAdapter(): Adapter {
   return {
     async createUser(user) {
       const prismaUser = await prisma.user.create({
         data: {
-          name: user.name,
+          name: user.name!,
           email: user.email!,
           avatar: user.avatar,
           username: user.username!,
-          password: user.password!,
+          password: await bcrypt.hash(user.password!, 10), // Certifique-se de hashear a senha
           is_admin: user.is_admin,
         },
       })
@@ -89,15 +90,20 @@ export function PrismaAdapter(): Adapter {
     },
 
     async updateUser(user) {
+      const updateData: any = {
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        is_admin: user.is_admin,
+      }
+
+      if (user.password) {
+        updateData.password = await bcrypt.hash(user.password, 10)
+      }
+
       const prismaUser = await prisma.user.update({
         where: { id: user.id! },
-        data: {
-          name: user.name,
-          email: user.email,
-          password: user.password,
-          avatar: user.avatar,
-          is_admin: user.is_admin,
-        },
+        data: updateData,
       })
 
       return {
@@ -130,6 +136,18 @@ export function PrismaAdapter(): Adapter {
     },
 
     async createSession({ sessionToken, userId, expires }) {
+      const existingSession = await prisma.session.findUnique({
+        where: { session_token: sessionToken },
+      })
+
+      if (existingSession) {
+        return {
+          userId: existingSession.user_id,
+          sessionToken: existingSession.session_token,
+          expires: existingSession.expires,
+        }
+      }
+
       await prisma.session.create({
         data: {
           user_id: userId,
