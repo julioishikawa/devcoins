@@ -41,7 +41,11 @@ export function UserAvatar() {
 
   return (
     <Avatar className="cursor-pointer" onClick={handleClick}>
-      <AvatarImage src={avatarUrl} alt={user?.name || 'User Avatar'} />
+      <AvatarImage
+        src={avatarUrl}
+        alt={user?.name || 'User Avatar'}
+        className="object-cover"
+      />
       <AvatarFallback className="bg-zinc-700">
         {user?.name?.charAt(0)}
       </AvatarFallback>

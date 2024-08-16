@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import bcrypt from 'bcrypt'
+import { PrismaAdapter } from '@/lib/auth/prisma-adapter' // Certifique-se de que o caminho está correto
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+
+const adapter = PrismaAdapter()
 
 const userSchema = z
   .object({
@@ -53,22 +55,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10)
-
-    const user = await prisma.user.create({
-      data: {
+    if (adapter.createUser) {
+      const user = await adapter.createUser({
         name,
-        username,
         email,
-        password: hashedPassword,
+        username,
+        password,
+        emailVerified: null,
         is_admin: false,
-      },
-    })
+      })
 
-    return NextResponse.json(
-      { message: 'Usuário criado com sucesso!', user },
-      { status: 201 }
-    )
+      return NextResponse.json(
+        { message: 'Usuário criado com sucesso!', user },
+        { status: 201 }
+      )
+    } else {
+      throw new Error('Método createUser não está definido no adaptador.')
+    }
   } catch (error) {
     console.error('Error creating user:', error)
     return NextResponse.json(

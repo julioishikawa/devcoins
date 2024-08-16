@@ -47,7 +47,6 @@ export default function SignIn() {
           <label className="block text-gray-100 mb-2" htmlFor="username">
             Username
           </label>
-
           <input
             id="username"
             type="text"

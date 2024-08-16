@@ -11,10 +11,12 @@ export function PrismaAdapter(): Adapter {
           email: user.email!,
           avatar: user.avatar,
           username: user.username!,
-          password: await bcrypt.hash(user.password!, 10), // Certifique-se de hashear a senha
+          password: await bcrypt.hash(user.password!, 10),
           is_admin: user.is_admin,
         },
       })
+
+      console.log('User created:', prismaUser)
 
       return {
         id: prismaUser.id,
