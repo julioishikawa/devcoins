@@ -2,14 +2,15 @@ import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcrypt'
-import { PrismaAdapter } from '@/lib/auth/prisma-adapter'
 import type { NextAuthOptions, User } from 'next-auth'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { PrismaAdapter } from '@/lib/auth/prisma-adapter'
 
 const prisma = new PrismaClient()
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(),
+  debug: true,
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -18,6 +19,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
+        console.log('Authorize callback triggered')
         if (!credentials) return null
 
         const { username, password } = credentials
@@ -27,14 +29,14 @@ export const authOptions: NextAuthOptions = {
         })
 
         if (user && (await bcrypt.compare(password, user.password))) {
-          const { id, username, name, email, is_admin, avatar } = user
+          console.log('User authenticated:', user)
           return {
-            id,
-            username,
-            name,
-            email,
-            is_admin,
-            avatar: avatar ?? undefined,
+            id: user.id,
+            username: user.username,
+            name: user.name,
+            email: user.email,
+            avatar: user.avatar ?? '',
+            is_admin: user.is_admin,
           } as User
         } else {
           throw new Error('Username ou Senha incorreta')
@@ -42,10 +44,6 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  pages: {
-    signIn: '/login',
-  },
-  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async session({ session, user }) {
       return {
@@ -54,9 +52,12 @@ export const authOptions: NextAuthOptions = {
       }
     },
   },
+  pages: {
+    signIn: '/login',
+  },
+  secret: process.env.NEXTAUTH_SECRET,
 }
 
-// Exporta métodos nomeados para compatibilidade com a nova estrutura
 export async function GET(req: NextApiRequest, res: NextApiResponse) {
   return NextAuth(req, res, authOptions)
 }

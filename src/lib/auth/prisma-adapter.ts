@@ -65,32 +65,6 @@ export function PrismaAdapter(): Adapter {
       }
     },
 
-    async getUserByAccount({ providerAccountId, provider }) {
-      const account = await prisma.account.findUnique({
-        where: {
-          provider_provider_account_id: {
-            provider,
-            provider_account_id: providerAccountId,
-          },
-        },
-        include: { user: true },
-      })
-
-      if (!account) return null
-
-      const { user } = account
-
-      return {
-        id: user.id,
-        name: user.name,
-        username: user.username,
-        email: user.email!,
-        emailVerified: null,
-        avatar: user.avatar!,
-        is_admin: user.is_admin,
-      }
-    },
-
     async updateUser(user) {
       const updateData: any = {
         name: user.name,
@@ -119,6 +93,32 @@ export function PrismaAdapter(): Adapter {
       }
     },
 
+    async getUserByAccount({ providerAccountId, provider }) {
+      const account = await prisma.account.findUnique({
+        where: {
+          provider_provider_account_id: {
+            provider,
+            provider_account_id: providerAccountId,
+          },
+        },
+        include: { user: true },
+      })
+
+      if (!account) return null
+
+      const { user } = account
+
+      return {
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        email: user.email!,
+        emailVerified: null,
+        avatar: user.avatar!,
+        is_admin: user.is_admin,
+      }
+    },
+
     async linkAccount(account) {
       await prisma.account.create({
         data: {
@@ -138,40 +138,55 @@ export function PrismaAdapter(): Adapter {
     },
 
     async createSession({ sessionToken, userId, expires }) {
-      const existingSession = await prisma.session.findUnique({
-        where: { session_token: sessionToken },
-      })
+      try {
+        console.log('Creating session with:', { sessionToken, userId, expires })
 
-      if (existingSession) {
-        return {
-          userId: existingSession.user_id,
-          sessionToken: existingSession.session_token,
-          expires: existingSession.expires,
+        const existingSession = await prisma.session.findUnique({
+          where: { session_token: sessionToken },
+        })
+
+        if (existingSession) {
+          console.log('Session already exists:', existingSession)
+          return {
+            userId: existingSession.user_id,
+            sessionToken: existingSession.session_token,
+            expires: existingSession.expires,
+          }
         }
-      }
 
-      await prisma.session.create({
-        data: {
-          user_id: userId,
+        const newSession = await prisma.session.create({
+          data: {
+            user_id: userId,
+            expires,
+            session_token: sessionToken,
+          },
+        })
+
+        console.log('New session created:', newSession)
+
+        return {
+          userId,
+          sessionToken,
           expires,
-          session_token: sessionToken,
-        },
-      })
-
-      return {
-        userId,
-        sessionToken,
-        expires,
+        }
+      } catch (error) {
+        console.error('Error creating session:', error)
+        throw new Error('Failed to create session')
       }
     },
 
     async getSessionAndUser(sessionToken) {
+      console.log('Fetching session and user with sessionToken:', sessionToken)
+
       const prismaSession = await prisma.session.findUnique({
         where: { session_token: sessionToken },
         include: { user: true },
       })
 
-      if (!prismaSession) return null
+      if (!prismaSession) {
+        console.log('No session found for token:', sessionToken)
+        return null
+      }
 
       const { user, ...session } = prismaSession
 

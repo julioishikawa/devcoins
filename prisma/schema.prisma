@@ -8,19 +8,31 @@ datasource db {
 }
 
 model User {
-  id         String    @id @default(uuid())
+  id         String   @id @default(uuid())
   avatar     String?
-  username   String    @unique
+  username   String   @unique
   name       String
-  email      String    @unique
+  email      String   @unique
   password   String
   is_admin   Boolean
-  created_at DateTime  @default(now())
-  updated_at DateTime  @default(now())
-  Account    Account[]
-  Session    Session[]
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  sessions Session[]
+  accounts Account[]
 
   @@map("users")
+}
+
+model Session {
+  id            String   @id @default(cuid())
+  user_id       String
+  expires       DateTime
+  session_token String   @unique
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
 }
 
 model Account {
@@ -41,15 +53,4 @@ model Account {
 
   @@unique([provider, provider_account_id])
   @@map("accounts")
-}
-
-model Session {
-  id            String   @id @default(cuid())
-  user_id       String
-  expires       DateTime
-  session_token String   @unique
-
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@map("sessions")
 }

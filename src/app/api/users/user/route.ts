@@ -12,22 +12,20 @@ const userSchema = z.object({
 })
 
 export async function GET(req: NextRequest) {
-  const session = await getServerSession({ req, ...authOptions })
+  const session = await getServerSession(authOptions)
 
   if (!session || !session.user) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
   }
 
-  // Extrair dados da sessão
   const user = {
-    username: session.user.username ?? '', // Forneça valores padrão ou trate valores indefinidos
+    username: session.user.username ?? '',
     email: session.user.email ?? '',
     name: session.user.name ?? '',
     avatar: session.user.avatar ?? undefined,
     is_admin: session.user.is_admin ?? false,
   }
 
-  // Validação dos dados do usuário
   const parsedUser = userSchema.safeParse(user)
 
   if (!parsedUser.success) {
