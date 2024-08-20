@@ -1,19 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaAdapter } from '@/lib/auth/prisma-adapter' // Certifique-se de que o caminho está correto
 import { prisma } from '@/lib/prisma'
+import { hash } from 'bcrypt'
 import { z } from 'zod'
-
-const adapter = PrismaAdapter()
 
 const userSchema = z
   .object({
     username: z.string().min(1, 'Username é obrigatório'),
     name: z.string().min(1, 'Nome é obrigatório'),
     email: z.string().email('Email inválido'),
-    password: z.string().min(1, 'A senha deve ter no mínimo 1 caracteres'),
+    password: z.string().min(1, 'A senha deve ter no mínimo 1 caractere'),
     confirmPassword: z
       .string()
-      .min(1, 'A confirmação de senha deve ter no mínimo 1 caracteres'),
+      .min(1, 'A confirmação de senha deve ter no mínimo 1 caractere'),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'As senhas não coincidem',
@@ -36,6 +34,14 @@ export async function POST(request: NextRequest) {
 
     const { username, name, email, password } = result.data
 
+    // Verificação adicional para garantir que todos os campos estão preenchidos
+    if (!username || !name || !email || !password) {
+      return NextResponse.json(
+        { error: 'Todos os campos são obrigatórios.' },
+        { status: 400 }
+      )
+    }
+
     const existingEmail = await prisma.user.findUnique({ where: { email } })
     const existingUsername = await prisma.user.findUnique({
       where: { username },
@@ -55,23 +61,25 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (adapter.createUser) {
-      const user = await adapter.createUser({
+    // Criação do hash da senha
+    const hashedPassword = await hash(password, 10)
+
+    // Criação do usuário no banco de dados
+    const user = await prisma.user.create({
+      data: {
+        username,
         name,
         email,
-        username,
-        password,
-        emailVerified: null,
+        password: hashedPassword,
+        avatar: '',
         is_admin: false,
-      })
+      },
+    })
 
-      return NextResponse.json(
-        { message: 'Usuário criado com sucesso!', user },
-        { status: 201 }
-      )
-    } else {
-      throw new Error('Método createUser não está definido no adaptador.')
-    }
+    return NextResponse.json(
+      { message: 'Usuário criado com sucesso!', user },
+      { status: 201 }
+    )
   } catch (error) {
     console.error('Error creating user:', error)
     return NextResponse.json(

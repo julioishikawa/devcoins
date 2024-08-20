@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState } from 'react'
-import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
@@ -18,16 +17,21 @@ export default function SignIn() {
     toast.dismiss()
 
     try {
-      const result = await signIn('credentials', {
-        redirect: false,
-        username,
-        password,
+      const response = await fetch('/api/users/signIn', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
       })
 
-      if (result?.error) {
-        toast.error(result.error)
-      } else if (result?.ok) {
+      const result = await response.json()
+
+      if (response.ok && result.success) {
+        toast.success('Login realizado com sucesso!')
         router.push('/')
+      } else {
+        toast.error(result.error || 'Ocorreu um erro ao fazer login.')
       }
     } catch (error) {
       toast.error('Ocorreu um erro inesperado. Tente novamente.')

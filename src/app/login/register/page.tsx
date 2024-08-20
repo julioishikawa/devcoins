@@ -18,8 +18,18 @@ export default function SignUp() {
 
     toast.dismiss()
 
+    if (!username || !name || !email || !password || !confirmPassword) {
+      toast.error('Por favor, preencha todos os campos.')
+      return
+    }
+
+    if (password !== confirmPassword) {
+      toast.error('As senhas não coincidem.')
+      return
+    }
+
     try {
-      const response = await fetch('/api/register', {
+      const response = await fetch('/api/users/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

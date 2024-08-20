@@ -1,7 +1,5 @@
 import NextAuth from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaClient } from '@prisma/client'
-import bcrypt from 'bcrypt'
 import type { NextAuthOptions, User } from 'next-auth'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { PrismaAdapter } from '@/lib/auth/prisma-adapter'
@@ -11,51 +9,39 @@ const prisma = new PrismaClient()
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(),
   debug: true,
-  providers: [
-    CredentialsProvider({
-      name: 'Credentials',
-      credentials: {
-        username: { label: 'Username', type: 'text' },
-        password: { label: 'Password', type: 'password' },
-      },
-      async authorize(credentials) {
-        console.log('Authorize callback triggered')
-        if (!credentials) return null
-
-        const { username, password } = credentials
-
-        const user = await prisma.user.findUnique({
-          where: { username },
-        })
-
-        if (user && (await bcrypt.compare(password, user.password))) {
-          console.log('User authenticated:', user)
-          return {
-            id: user.id,
-            username: user.username,
-            name: user.name,
-            email: user.email,
-            avatar: user.avatar ?? '',
-            is_admin: user.is_admin,
-          } as User
-        } else {
-          throw new Error('Username ou Senha incorreta')
-        }
-      },
-    }),
-  ],
+  providers: [], // Provedores vazios, necessário para satisfazer o TypeScript
   callbacks: {
+    // async jwt({ token, user }) {
+    //   if (user) {
+    //     token.id = user.id
+    //     token.username = user.username
+    //     token.name = user.name
+    //     token.email = user.email
+    //     token.avatar = user.avatar
+    //     token.is_admin = user.is_admin
+    //   }
+    //   return token
+    // },
+
     async session({ session, user }) {
-      return {
-        ...session,
-        user,
+      session.user = {
+        id: user.id as string,
+        username: user.username as string,
+        name: user.name as string,
+        email: user.email as string,
+        avatar: user.avatar as string,
+        is_admin: user.is_admin as boolean,
       }
+
+      return session
     },
   },
   pages: {
     signIn: '/login',
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: 'database', // Utilizando banco de dados para sessões
+  },
 }
 
 export async function GET(req: NextApiRequest, res: NextApiResponse) {

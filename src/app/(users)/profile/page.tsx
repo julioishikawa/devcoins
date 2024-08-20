@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { useState, useEffect } from 'react'
 import { CldUploadButton } from 'next-cloudinary'
 import { cloudinaryConfig } from '../../../../cloudinary.config'
+import { toast } from 'sonner'
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<any>(null)
@@ -25,7 +26,6 @@ export default function ProfilePage() {
       }
 
       const data = await response.json()
-      console.log('Profile data:', data)
 
       setProfile(data)
       setUsername(data.username)
@@ -81,12 +81,14 @@ export default function ProfilePage() {
       const result = await updateResponse.json()
 
       if (result.success) {
-        console.log('faça o login novamente para mostrar as mudanças')
+        // Atualiza o estado local com os novos dados do servidor
+        setProfile(result.user)
+        toast.success('Perfil atualizado com sucesso')
       } else {
-        console.error('Error saving changes:', result.error)
+        toast.error('Error saving changes:', result.error)
       }
-    } catch (error) {
-      console.error('Error in handleSaveChanges:', error)
+    } catch (error: any) {
+      toast.error('Error in handleSaveChanges:', error)
       setError('Failed to save changes')
     }
   }

@@ -16,8 +16,6 @@ export function PrismaAdapter(): Adapter {
         },
       })
 
-      console.log('User created:', prismaUser)
-
       return {
         id: prismaUser.id,
         name: prismaUser.name,
@@ -139,14 +137,11 @@ export function PrismaAdapter(): Adapter {
 
     async createSession({ sessionToken, userId, expires }) {
       try {
-        console.log('Creating session with:', { sessionToken, userId, expires })
-
         const existingSession = await prisma.session.findUnique({
           where: { session_token: sessionToken },
         })
 
         if (existingSession) {
-          console.log('Session already exists:', existingSession)
           return {
             userId: existingSession.user_id,
             sessionToken: existingSession.session_token,
@@ -162,29 +157,23 @@ export function PrismaAdapter(): Adapter {
           },
         })
 
-        console.log('New session created:', newSession)
-
         return {
           userId,
           sessionToken,
           expires,
         }
       } catch (error) {
-        console.error('Error creating session:', error)
         throw new Error('Failed to create session')
       }
     },
 
     async getSessionAndUser(sessionToken) {
-      console.log('Fetching session and user with sessionToken:', sessionToken)
-
       const prismaSession = await prisma.session.findUnique({
         where: { session_token: sessionToken },
         include: { user: true },
       })
 
       if (!prismaSession) {
-        console.log('No session found for token:', sessionToken)
         return null
       }
 
@@ -222,12 +211,6 @@ export function PrismaAdapter(): Adapter {
         userId: prismaSession.user_id,
         expires: prismaSession.expires,
       }
-    },
-
-    async deleteSession(sessionToken) {
-      await prisma.session.delete({
-        where: { session_token: sessionToken },
-      })
     },
   }
 }
