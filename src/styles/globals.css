@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Forçar cor de fundo do modal */
+.cloudinary-modal {
+  background-color: #3f3f46 !important; /* Substitua por sua cor desejada */
+}
+
+/* Esconder botão "Upload More" */
+.cloudinary-button.cloudinary-button-secondary {
+  display: none !important;
+}

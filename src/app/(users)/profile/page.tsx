@@ -4,17 +4,19 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useState, useEffect } from 'react'
-import { CldUploadButton } from 'next-cloudinary'
-import { cloudinaryConfig } from '../../../../cloudinary.config'
 import { toast } from 'sonner'
+import CloudinaryUploadButton from '@/components/cloudinary-upload-button'
+import { cloudinaryConfig } from '../../../../cloudinary.config'
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<any>(null)
+  const [initialProfile, setInitialProfile] = useState<any>(null)
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [isModified, setIsModified] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   async function fetchProfile() {
@@ -28,6 +30,7 @@ export default function ProfilePage() {
       const data = await response.json()
 
       setProfile(data)
+      setInitialProfile(data)
       setUsername(data.username)
       setEmail(data.email)
       setName(data.name)
@@ -43,23 +46,26 @@ export default function ProfilePage() {
   }, [])
 
   useEffect(() => {
-    if (profile) {
+    if (initialProfile) {
       const hasChanges =
-        username !== profile.username ||
-        email !== profile.email ||
-        name !== profile.name
+        username !== initialProfile.username ||
+        email !== initialProfile.email ||
+        name !== initialProfile.name ||
+        profile.avatar !== initialProfile.avatar
 
       setIsModified(hasChanges)
     }
-  }, [username, email, name, profile])
+  }, [username, email, name, profile, initialProfile])
 
   const handleAvatarUpload = (result: any) => {
-    if (result?.info?.secure_url) {
-      setProfile({ ...profile, avatar: result.info.secure_url })
+    if (result?.secure_url) {
+      setProfile({ ...profile, avatar: result.secure_url })
     }
   }
 
   const handleSaveChanges = async () => {
+    setIsSaving(true)
+
     try {
       const updateResponse = await fetch('/api/users/update-user', {
         method: 'PUT',
@@ -74,22 +80,25 @@ export default function ProfilePage() {
         }),
       })
 
-      if (!updateResponse.ok) {
-        throw new Error('Failed to save changes')
-      }
-
       const result = await updateResponse.json()
 
+      if (!updateResponse.ok) {
+        throw new Error(result.error || 'Failed to save changes')
+      }
+
       if (result.success) {
-        // Atualiza o estado local com os novos dados do servidor
         setProfile(result.user)
+        setInitialProfile(result.user)
         toast.success('Perfil atualizado com sucesso')
       } else {
-        toast.error('Error saving changes:', result.error)
+        toast.error('Erro ao salvar as alterações: ' + result.error)
+        setError(result.error)
       }
     } catch (error: any) {
-      toast.error('Error in handleSaveChanges:', error)
-      setError('Failed to save changes')
+      toast.error(error.message || 'Failed to save changes')
+      setError(error.message)
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -97,14 +106,6 @@ export default function ProfilePage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-zinc-500">Carregando...</div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-red-500">{error}</div>
       </div>
     )
   }
@@ -133,14 +134,12 @@ export default function ProfilePage() {
               </AvatarFallback>
             </Avatar>
 
-            <CldUploadButton
+            <CloudinaryUploadButton
+              onUploadSuccess={handleAvatarUpload}
               signatureEndpoint="/api/cloudinary/generate-upload-signature"
-              uploadPreset={cloudinaryConfig.upload_preset}
-              onSuccess={handleAvatarUpload}
-              className="absolute -bottom-3 -right-1 bg-zinc-600 hover:bg-zinc-500 rounded-full p-2"
-            >
-              <span className="text-zinc-400">📷</span>
-            </CldUploadButton>
+              uploadPreset={cloudinaryConfig.upload_preset || 'default_preset'}
+              className="border"
+            />
           </div>
 
           <div className="flex flex-col gap-2 w-full">
@@ -187,11 +186,14 @@ export default function ProfilePage() {
             <Button
               className="bg-zinc-900 hover:bg-zinc-700"
               onClick={handleSaveChanges}
+              disabled={isSaving}
             >
-              Salvar alterações
+              {isSaving ? 'Salvando...' : 'Salvar alterações'}
             </Button>
           </div>
         )}
+
+        {error && <div className="text-red-500 mt-4">{error}</div>}
       </main>
     </section>
   )

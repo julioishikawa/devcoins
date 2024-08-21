@@ -13,7 +13,6 @@ const userSchema = z.object({
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions)
-  console.log('Session user:', session)
 
   if (!session || !session.user) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })

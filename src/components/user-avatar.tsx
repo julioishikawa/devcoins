@@ -15,7 +15,7 @@ export function UserAvatar() {
   const router = useRouter()
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    async function fetchUserData() {
       try {
         const response = await fetch('/api/users/user')
         if (response.ok) {
