@@ -1,18 +1,21 @@
-import CarouselSkeleton from '@/components/carousel-skeleton'
 import { CoinCarousel } from '@/components/coin-carousel'
 import { CoinChart } from '@/components/coin-chart'
-import { Suspense } from 'react'
+import Footer from '@/components/footer'
+import Header from '@/components/header'
 
-export default function Home() {
+export default async function Home() {
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+
   return (
-    <main className="p-10 sm:px-20">
-      <CoinChart />
-
-      <div className="flex justify-center">
-        <Suspense fallback={<CarouselSkeleton />}>
+    <div>
+      <Header />
+      <main className="p-10 sm:px-20">
+        <CoinChart />
+        <div className="flex justify-center">
           <CoinCarousel />
-        </Suspense>
-      </div>
-    </main>
+        </div>
+      </main>
+      <Footer />
+    </div>
   )
 }

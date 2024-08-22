@@ -15,13 +15,13 @@ import {
   ChartLegendContent,
 } from './ui/chart'
 
-interface HourlyData {
-  time: string
+interface DailyData {
+  date: string
   value: number
 }
 
 interface LineChartComponentProps {
-  data: HourlyData[]
+  data: DailyData[]
   config: Record<string, { color: string }>
   selectedCoin: string
 }
@@ -34,18 +34,18 @@ export function LineChartComponent({
   const color = config[selectedCoin]?.color || '#8884d8'
 
   return (
-    <ChartContainer config={config} className="w-full h-[500px] mt-8">
+    <ChartContainer config={config} className="w-full h-[500px]">
       <ResponsiveContainer>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="time" />
-          <YAxis />
+          <XAxis dataKey="date" />
+          <YAxis domain={['auto', 'auto']} padding={{ top: 50, bottom: 0 }} />
           <Tooltip content={<ChartTooltipContent />} />
           <Legend content={<ChartLegendContent />} />
           <Line
             type="linear"
             dataKey="value"
-            name="Valor:&nbsp;"
+            name="Valor de Fechamento:&nbsp;"
             stroke={color}
             strokeWidth={3}
             dot={{ stroke: color, strokeWidth: 2, r: 4 }}

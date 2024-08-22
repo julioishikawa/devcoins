@@ -3,6 +3,7 @@
 import * as React from 'react'
 import * as RechartsPrimitive from 'recharts'
 import { cn } from '@/lib/utils'
+import { formatCurrency, currencySymbols } from '@/utils/currency-refactor'
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: '', dark: '.dark' } as const
@@ -101,20 +102,6 @@ ${colorConfig
 
 const ChartTooltip = RechartsPrimitive.Tooltip
 
-function formatCurrency(value: number): string {
-  // Converte o valor para string com duas casas decimais
-  const formattedValue = value.toFixed(2)
-
-  // Separa a parte inteira da decimal
-  const [integerPart, decimalPart] = formattedValue.split('.')
-
-  // Adiciona separador de milhar com vírgulas
-  const integerWithCommas = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-
-  // Retorna o valor formatado
-  return `R$ ${integerWithCommas},${decimalPart}`
-}
-
 const ChartTooltipContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
@@ -203,6 +190,9 @@ const ChartTooltipContent = React.forwardRef<
             const itemConfig = getPayloadConfigFromPayload(config, item, key)
             const indicatorColor = color || item.payload.fill || item.color
 
+            // Use item.name como chave para buscar o símbolo da moeda
+            const currencySymbol = currencySymbols[item.name as string] || ''
+
             return (
               <div
                 key={item.dataKey}
@@ -253,7 +243,7 @@ const ChartTooltipContent = React.forwardRef<
                       </div>
                       {item.value && (
                         <span className="font-mono font-medium tabular-nums text-slate-950 dark:text-slate-50">
-                          {formatCurrency(Number(item.value))}
+                          {formatCurrency(Number(item.value), currencySymbol)}
                         </span>
                       )}
                     </div>

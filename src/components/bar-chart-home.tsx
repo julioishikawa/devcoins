@@ -29,7 +29,7 @@ export function BarChartComponent({
     <ChartContainer config={config} className="w-full h-[500px]">
       <BarChart data={data}>
         <XAxis dataKey="date" />
-        <YAxis />
+        <YAxis domain={['auto', 'auto']} padding={{ top: 50, bottom: 0 }} />
         <Tooltip content={<ChartTooltipContent />} />
         <Legend content={<ChartLegendContent />} />
         <Bar

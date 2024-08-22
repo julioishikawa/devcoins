@@ -29,7 +29,7 @@ export function SearchInput() {
   return (
     <form
       onSubmit={handleSearch}
-      className="flex w-full items-center gap-3 rounded-md bg-zinc-800 pl-3 focus-within:ring-2 focus-within:ring-white"
+      className="flex w-full items-center gap-3 rounded-md bg-zinc-900 pl-3 focus-within:ring-2 focus-within:ring-white"
     >
       <Search className="w-5 h-5 text-zinc-500" />
 
@@ -38,7 +38,7 @@ export function SearchInput() {
         name="q"
         defaultValue={query ?? ''}
         placeholder="Buscar coins..."
-        className="bg-zinc-800 text-zinc-50 placeholder:text-zinc-500 border-none p-0 focus-visible:ring-0 ring-offset-0 focus-visible:ring-offset-0 dark:ring-offset-0 dark:focus-visible:ring-offset-0"
+        className="bg-zinc-900 text-zinc-50 placeholder:text-zinc-500 border-none p-0 focus-visible:ring-0 ring-offset-0 focus-visible:ring-offset-0 dark:ring-offset-0 dark:focus-visible:ring-offset-0"
       />
     </form>
   )
