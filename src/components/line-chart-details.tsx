@@ -34,8 +34,8 @@ export function LineChartComponent({
   const color = config[selectedCoin]?.color || '#8884d8'
 
   return (
-    <ChartContainer config={config} className="w-full max-h-[500px]">
-      <ResponsiveContainer>
+    <ChartContainer config={config} className="w-full max-h-[700px]">
+      <ResponsiveContainer width="100%">
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="time" />

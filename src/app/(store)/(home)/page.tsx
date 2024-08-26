@@ -7,15 +7,18 @@ export default async function Home() {
   await new Promise((resolve) => setTimeout(resolve, 1000))
 
   return (
-    <div>
+    <section className="h-screen flex flex-col justify-between">
       <Header />
-      <main className="p-10 sm:px-20">
+
+      <div className="p-10 flex flex-col gap-5">
         <CoinChart />
+
         <div className="flex justify-center">
           <CoinCarousel />
         </div>
-      </main>
+      </div>
+
       <Footer />
-    </div>
+    </section>
   )
 }

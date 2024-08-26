@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { prisma } from '@/lib/prisma' // Certifique-se de que você tem o prisma configurado corretamente
 import { z } from 'zod'
 
 const userSchema = z.object({
+  id: z.string(), // Inclua o id no schema
   username: z.string(),
   email: z.string().email(),
   name: z.string(),
@@ -18,12 +20,23 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
   }
 
-  const user = {
-    username: session.user.username ?? '',
-    email: session.user.email ?? '',
-    name: session.user.name ?? '',
-    avatar: session.user.avatar ?? undefined,
-    is_admin: session.user.is_admin ?? false,
+  // Busque o usuário no banco de dados usando o email da sessão
+  const user = await prisma.user.findUnique({
+    where: {
+      email: session.user.email!,
+    },
+    select: {
+      id: true, // Inclua o id do usuário
+      username: true,
+      email: true,
+      name: true,
+      avatar: true,
+      is_admin: true,
+    },
+  })
+
+  if (!user) {
+    return NextResponse.json({ message: 'User not found' }, { status: 404 })
   }
 
   const parsedUser = userSchema.safeParse(user)

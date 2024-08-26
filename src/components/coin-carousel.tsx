@@ -63,11 +63,13 @@ async function fetchCoinImageUrls(): Promise<CoinData[]> {
 
 export function CoinCarousel() {
   const [coins, setCoins] = useState<CoinData[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadCoinImages() {
       const data = await fetchCoinImageUrls()
       setCoins(data)
+      setLoading(false)
     }
 
     loadCoinImages()
@@ -78,17 +80,17 @@ export function CoinCarousel() {
       opts={{
         align: 'start',
       }}
-      className="w-full lg:w-[1000px]"
+      className="w-full md:max-w-[600px] lg:max-w-[1000px]"
     >
       <CarouselContent>
         {coins.map((coin) => (
           <CarouselItem
             key={coin.name}
-            className="basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6"
+            className="basis-1/1 sm:basis-1/1 md:basis-1/4 lg:basis-1/6"
           >
             <Link href={`/details?coin=${coin.name}`}>
               <div className="p-2 border-none cursor-pointer">
-                <Card className="border-none bg-zinc-800">
+                <Card className="border-none bg-zinc-800 min-w-[112px]">
                   <CardContent className="flex aspect-square items-center justify-center p-6 bg-zinc-800 rounded">
                     <Image
                       src={coin.imageUrl}
@@ -104,8 +106,8 @@ export function CoinCarousel() {
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious className="bg-zinc-800 border-none" />
-      <CarouselNext className="bg-zinc-800 border-none" />
+      <CarouselPrevious className="hidden md:flex bg-zinc-800 border-none" />
+      <CarouselNext className="hidden md:flex bg-zinc-800 border-none" />
     </Carousel>
   )
 }

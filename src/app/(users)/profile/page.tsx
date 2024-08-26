@@ -109,7 +109,7 @@ export default function ProfilePage() {
         <div className="h-screen flex flex-col justify-between">
           <Header />
 
-          <section className="flex flex-col items-center">
+          <section className="p-10 mx-auto">
             <form
               onSubmit={handleSaveChanges}
               className="bg-zinc-800 p-6 rounded-lg shadow-lg max-w-sm w-full"

@@ -2,7 +2,12 @@
 const nextConfig = {
   reactStrictMode: false,
   images: {
-    domains: ['www.cryptocompare.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'www.cryptocompare.com',
+      },
+    ],
   },
 }
 
