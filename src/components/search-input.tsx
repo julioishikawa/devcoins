@@ -1,9 +1,10 @@
 'use client'
 
-import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FormEvent } from 'react'
+
+import { Input } from '@/components/ui/input'
 
 export function SearchInput() {
   const router = useRouter()
@@ -17,7 +18,7 @@ export function SearchInput() {
     const formData = new FormData(event.currentTarget)
     const data = Object.fromEntries(formData)
 
-    const query = data.q
+    const query = data.q as string
 
     if (!query) {
       return null
@@ -37,7 +38,7 @@ export function SearchInput() {
         type="text"
         name="q"
         defaultValue={query ?? ''}
-        placeholder="Buscar coins..."
+        placeholder="Buscar moeda por nome..."
         className="bg-zinc-900 text-zinc-50 placeholder:text-zinc-500 border-none p-0 focus-visible:ring-0 ring-offset-0 focus-visible:ring-offset-0 dark:ring-offset-0 dark:focus-visible:ring-offset-0"
       />
     </form>

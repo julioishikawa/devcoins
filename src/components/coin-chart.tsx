@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+
 import {
   Select,
   SelectContent,
@@ -10,67 +11,13 @@ import {
 } from './ui/select'
 import { BarChartComponent } from './bar-chart-home'
 import { LineChartComponent } from './line-chart-home'
-
-import { api } from '@/lib/axios'
-import {
-  fetchConversionRate,
-  supportedCurrencies,
-} from '@/utils/currency-refactor'
-
-interface ChartData {
-  date: string
-  value: number
-  minValue: number
-}
-
-interface ApiResponse {
-  Data: {
-    Data: {
-      time: number
-      close: number
-      low: number
-    }[]
-  }
-}
-
-async function fetchDailyData(
-  coin: string,
-  currency: string
-): Promise<ChartData[]> {
-  try {
-    const response = await api.get<ApiResponse>(
-      `https://min-api.cryptocompare.com/data/v2/histoday?fsym=${coin.toUpperCase()}&tsym=USD&limit=7`
-    )
-    const prices = response.data.Data.Data
-
-    const conversionRate = await fetchConversionRate('USD', currency)
-
-    return prices.map((price) => ({
-      date: new Date(price.time * 1000).toLocaleDateString(),
-      value: price.close * conversionRate,
-      minValue: price.low * conversionRate,
-    }))
-  } catch (error) {
-    console.error('Erro ao buscar os dados da API', error)
-    return []
-  }
-}
-
-const config: Record<string, { color: string }> = {
-  BTC: { color: '#f7931a' },
-  ETH: { color: '#3c3c3d' },
-  XRP: { color: '#00aae4' },
-  LTC: { color: '#cfcfcf' },
-  ADA: { color: '#0033ad' },
-  DOT: { color: '#e6007a' },
-  BNB: { color: '#f0b90b' },
-  SOL: { color: '#3e3e3e' },
-  DOGE: { color: '#c2a633' },
-}
+import { ChartData, fetchDailyData } from '@/utils/fetch-daily-data'
+import { supportedCurrencies } from '@/utils/currency-refactor'
+import { topCoins, config } from '@/utils/fetch-coin-details'
 
 export function CoinChart() {
   const [dailyData, setDailyData] = useState<ChartData[]>([])
-  const [selectedCoin, setSelectedCoin] = useState<string>('BTC')
+  const [selectedCoin, setSelectedCoin] = useState<string>(topCoins[0].symbol) // Usando o símbolo da primeira moeda como padrão
   const [selectedCurrency, setSelectedCurrency] = useState<string>('BRL')
   const [chartType, setChartType] = useState<'bar' | 'line'>('bar')
 
@@ -111,15 +58,11 @@ export function CoinChart() {
             <SelectValue placeholder="Selecione uma moeda" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="BTC">Bitcoin</SelectItem>
-            <SelectItem value="ETH">Ethereum</SelectItem>
-            <SelectItem value="XRP">Ripple</SelectItem>
-            <SelectItem value="LTC">Litecoin</SelectItem>
-            <SelectItem value="ADA">Cardano</SelectItem>
-            <SelectItem value="DOT">Polkadot</SelectItem>
-            <SelectItem value="BNB">Binance Coin</SelectItem>
-            <SelectItem value="SOL">Solana</SelectItem>
-            <SelectItem value="DOGE">Dogecoin</SelectItem>
+            {topCoins.map((coin) => (
+              <SelectItem key={coin.symbol} value={coin.symbol}>
+                {coin.name} ({coin.symbol})
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 

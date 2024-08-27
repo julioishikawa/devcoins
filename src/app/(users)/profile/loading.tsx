@@ -4,7 +4,7 @@ export default function ProfileLoading() {
   return (
     <div className="h-screen flex flex-col justify-between">
       <header className="flex items-center gap-5 p-4">
-        <Skeleton className="w-11 h-8 px-14" />
+        <Skeleton className="w-44 h-8 px-14" />
         <Skeleton className="w-full h-10" />
         <Skeleton className="w-12 h-10 rounded-full" />
         <Skeleton className="w-8 h-8" />

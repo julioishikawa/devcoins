@@ -5,7 +5,7 @@ export default function CoinLoading() {
   return (
     <section className="flex flex-col justify-between gap-10 h-screen">
       <header className="flex items-center gap-5 p-4">
-        <Skeleton className="w-11 h-8 px-14" />
+        <Skeleton className="w-44 h-8 px-14" />
         <Skeleton className="w-full h-10" />
         <Skeleton className="w-12 h-10 rounded-full" />
         <Skeleton className="w-8 h-8" />

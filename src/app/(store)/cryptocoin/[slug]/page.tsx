@@ -1,26 +1,26 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { toast } from 'sonner'
 import QRCode from 'qrcode.react'
+
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { LineChartComponent } from '@/components/line-chart-details'
 import Header from '@/components/header'
 import Footer from '@/components/footer'
 import { formatLargeNumber } from '@/utils/format-large-number'
 import { currencySymbols, supportedCurrencies } from '@/utils/currency-refactor'
-
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../../../components/ui/select'
-import CoinLoading from './loading'
-import { toast } from 'sonner'
-import { fetchCoinDetails } from '@/utils/coin-details'
+} from '@/components/ui/select'
+import { fetchCoinDetails, config } from '@/utils/fetch-coin-details'
 import { fetchHourlyData } from '@/utils/fetch-coin-hour'
+import CoinLoading from './loading'
 
 interface CoinsProps {
   params: {
@@ -43,27 +43,14 @@ interface HourlyData {
   value: number
 }
 
-const config: Record<string, { color: string }> = {
-  BTC: { color: '#f7931a' },
-  ETH: { color: '#3c3c3d' },
-  XRP: { color: '#00aae4' },
-  LTC: { color: '#cfcfcf' },
-  ADA: { color: '#0033ad' },
-  DOT: { color: '#e6007a' },
-  BNB: { color: '#f0b90b' },
-  SOL: { color: '#3e3e3e' },
-  DOGE: { color: '#c2a633' },
-}
-
 export default function CoinDetailsPage({ params }: CoinsProps) {
   const { slug } = params
-  const [details, setDetails] = useState<CoinDetails | null>(null)
+  const [coin, setCoin] = useState<CoinDetails | null>(null)
   const [hourlyData, setHourlyData] = useState<HourlyData[]>([])
   const [selectedCurrency, setSelectedCurrency] = useState<string>('BRL')
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false)
   const [isQRCodeModalOpen, setIsQRCodeModalOpen] = useState(false)
   const [transactionId, setTransactionId] = useState<string | null>(null)
-  const [timeRemaining, setTimeRemaining] = useState(30)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
   const paymentUrlWithId = `/api/payment/${transactionId}`
@@ -82,11 +69,11 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
     }
   }
 
-  const handleBuyClick = () => {
+  async function handleBuyClick() {
     setIsBuyModalOpen(true)
   }
 
-  const handleConfirmPurchase = async () => {
+  async function handleConfirmPurchase() {
     try {
       const userId = await fetchUserId()
 
@@ -113,41 +100,34 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
       setIsQRCodeModalOpen(true)
 
       // Iniciar o temporizador de 30 segundos
-      setTimeRemaining(30)
-      timerRef.current = setInterval(() => {
-        setTimeRemaining((prevTime) => {
-          if (prevTime <= 1) {
-            clearInterval(timerRef.current as NodeJS.Timeout)
-            toast.error('Tempo de pagamento esgotado.')
-            fetch(`/api/payment/${transactionId}`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ status: 'failed' }),
-            })
-            setIsQRCodeModalOpen(false)
-          }
-          return prevTime - 1
+      timerRef.current = setTimeout(async () => {
+        toast.error('Tempo de pagamento esgotado.')
+        await fetch(`/api/payment/${transactionId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status: 'failed' }),
         })
-      }, 1000)
+
+        setIsQRCodeModalOpen(false)
+      }, 30000)
     } catch (error) {
       console.error('Erro ao criar transação:', error)
       toast.error('Erro ao iniciar a transação. Tente novamente.')
     }
   }
 
-  const checkPaymentStatus = async () => {
+  async function checkPaymentStatus() {
     if (transactionId) {
       try {
         const response = await fetch(`/api/payment/${transactionId}`, {
-          method: 'GET', // Make sure this matches what your API expects
+          method: 'GET',
         })
         const data = await response.json()
 
         if (data.status === 'completed') {
           toast.success('Pagamento concluído!')
-          clearTimeout(timerRef.current as NodeJS.Timeout)
           setIsQRCodeModalOpen(false)
           window.open('https://github.com/julioishikawa', '_blank')
         } else {
@@ -160,24 +140,47 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
     }
   }
 
+  async function handleClosePaymentModal() {
+    // Limpa o temporizador se existir
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+      timerRef.current = null
+    }
+
+    if (transactionId) {
+      try {
+        // Faz a requisição para atualizar o status para 'failed'
+        await fetch(`/api/payment/${transactionId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status: 'failed' }),
+        })
+        toast.error('Pagamento cancelado.')
+      } catch (error) {
+        console.error(
+          'Erro ao atualizar o status da transação para failed:',
+          error
+        )
+      }
+    }
+
+    setIsQRCodeModalOpen(false)
+  }
+
   useEffect(() => {
     if (slug) {
       fetchCoinDetails(slug, selectedCurrency)
-        .then(setDetails)
+        .then(setCoin)
         .catch(console.error)
       fetchHourlyData(slug, selectedCurrency)
         .then(setHourlyData)
         .catch(console.error)
     }
-
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current)
-      }
-    }
   }, [slug, selectedCurrency])
 
-  if (!details || hourlyData.length === 0) {
+  if (!coin || hourlyData.length === 0) {
     return <CoinLoading />
   }
 
@@ -206,24 +209,24 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
               </Select>
             </div>
             <div className="flex items-center gap-4">
-              <h1 className="text-3xl font-bold">{details.name}</h1>
+              <h1 className="text-3xl font-bold">{coin.name}</h1>
 
               <Image
-                src={details.imageUrl}
-                alt={details.name}
+                src={coin.imageUrl}
+                alt={coin.name}
                 width={64}
                 height={64}
               />
             </div>
 
-            <p className="text-sm text-zinc-400">{details.description}</p>
+            <p className="text-sm text-zinc-400">{coin.description}</p>
 
             <div className="flex flex-row lg:flex-col gap-8 lg:gap-5">
               <div className="flex flex-col gap-5">
                 <p className="text-sm">
                   Preço: <br />
                   {currencySymbols[selectedCurrency]}
-                  {details.price.toLocaleString('pt-BR', {
+                  {coin.price.toLocaleString('pt-BR', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -231,7 +234,7 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
                 <p className="text-sm">
                   Market Cap: <br />
                   {currencySymbols[selectedCurrency]}
-                  {formatLargeNumber(details.marketCap)}
+                  {formatLargeNumber(coin.marketCap)}
                 </p>
               </div>
 
@@ -239,11 +242,11 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
                 <p className="text-sm">
                   Volume 24h: <br />
                   {currencySymbols[selectedCurrency]}
-                  {formatLargeNumber(details.volume24h)}
+                  {formatLargeNumber(coin.volume24h)}
                 </p>
                 <p className="text-sm">
                   Variação 24h: <br />
-                  {details.change24h}%
+                  {coin.change24h}%
                 </p>
               </div>
             </div>
@@ -252,14 +255,14 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
               className="mt-5 px-4 py-2 bg-blue-600 text-white rounded"
               onClick={handleBuyClick}
             >
-              Comprar {details.name}
+              Comprar {coin.name}
             </button>
           </div>
 
           <LineChartComponent
             data={hourlyData}
             config={config}
-            selectedCoin={details.name}
+            selectedCoin={coin.name}
           />
         </div>
       </main>
@@ -269,9 +272,9 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
         <DialogContent className="bg-zinc-950">
           <DialogTitle>Confirmar Compra</DialogTitle>
           <p>
-            Você realmente deseja comprar {details.name} por{' '}
+            Você realmente deseja comprar {coin.name} por{' '}
             {currencySymbols[selectedCurrency]}
-            {details.price.toLocaleString('pt-BR', {
+            {coin.price.toLocaleString('pt-BR', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
@@ -294,19 +297,30 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isQRCodeModalOpen} onOpenChange={setIsQRCodeModalOpen}>
-        <DialogContent className="bg-zinc-950">
+      <Dialog
+        open={isQRCodeModalOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleClosePaymentModal() // Função que será chamada ao fechar o modal
+          }
+          setIsQRCodeModalOpen(open)
+        }}
+      >
+        <DialogContent
+          className="bg-zinc-950"
+          aria-describedby="dialog-description"
+        >
           <DialogTitle>Pagamento</DialogTitle>
           <div className="flex flex-col justify-center items-center">
             <div className="bg-white p-2">
               <QRCode value={paymentUrlWithId} size={200} />
             </div>
 
-            <p className="text-sm text-zinc-400 mt-4">
+            <p id="dialog-description" className="text-sm text-zinc-400 mt-4">
               Escaneie o código para completar o pagamento.
             </p>
             <p className="text-sm text-red-500 mt-2">
-              Tempo restante: {timeRemaining} segundos
+              O pagamento será cancelado se não for concluído em 30 segundos.
             </p>
             <button
               className="mt-5 px-4 py-2 bg-green-600 text-white rounded"
