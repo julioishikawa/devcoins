@@ -63,13 +63,11 @@ async function fetchCoinImageUrls(): Promise<CoinData[]> {
 
 export function CoinCarousel() {
   const [coins, setCoins] = useState<CoinData[]>([])
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadCoinImages() {
       const data = await fetchCoinImageUrls()
       setCoins(data)
-      setLoading(false)
     }
 
     loadCoinImages()
@@ -88,7 +86,7 @@ export function CoinCarousel() {
             key={coin.name}
             className="basis-1/1 sm:basis-1/1 md:basis-1/4 lg:basis-1/6"
           >
-            <Link href={`/details?coin=${coin.name}`}>
+            <Link href={`/cryptocoin/${coin.name}`}>
               <div className="p-2 border-none cursor-pointer">
                 <Card className="border-none bg-zinc-800 min-w-[112px]">
                   <CardContent className="flex aspect-square items-center justify-center p-6 bg-zinc-800 rounded">

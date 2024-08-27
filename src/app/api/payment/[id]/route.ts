@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { TransactionStatus } from '@prisma/client'
 
 export async function GET(
   req: NextRequest,
@@ -41,7 +40,7 @@ export async function GET(
       data: { status: 'completed' },
     })
 
-    return NextResponse.redirect('https://github.com/julioishikawa', 302)
+    return NextResponse.json({ status: 'completed' }, { status: 200 })
   } catch (error) {
     console.error('Erro ao processar a transação:', error)
     return NextResponse.json(

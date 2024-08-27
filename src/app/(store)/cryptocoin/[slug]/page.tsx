@@ -1,6 +1,5 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
 import Image from 'next/image'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
@@ -17,11 +16,17 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../../components/ui/select'
+} from '../../../../components/ui/select'
 import CoinLoading from './loading'
 import { toast } from 'sonner'
 import { fetchCoinDetails } from '@/utils/coin-details'
 import { fetchHourlyData } from '@/utils/fetch-coin-hour'
+
+interface CoinsProps {
+  params: {
+    slug: string
+  }
+}
 
 interface CoinDetails {
   name: string
@@ -50,15 +55,15 @@ const config: Record<string, { color: string }> = {
   DOGE: { color: '#c2a633' },
 }
 
-export default function CoinDetailsPage() {
-  const searchParams = useSearchParams()
-  const coin = searchParams.get('coin')
+export default function CoinDetailsPage({ params }: CoinsProps) {
+  const { slug } = params
   const [details, setDetails] = useState<CoinDetails | null>(null)
   const [hourlyData, setHourlyData] = useState<HourlyData[]>([])
   const [selectedCurrency, setSelectedCurrency] = useState<string>('BRL')
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false)
   const [isQRCodeModalOpen, setIsQRCodeModalOpen] = useState(false)
   const [transactionId, setTransactionId] = useState<string | null>(null)
+  const [timeRemaining, setTimeRemaining] = useState(30)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
   const paymentUrlWithId = `/api/payment/${transactionId}`
@@ -108,17 +113,24 @@ export default function CoinDetailsPage() {
       setIsQRCodeModalOpen(true)
 
       // Iniciar o temporizador de 30 segundos
-      timerRef.current = setTimeout(async () => {
-        toast.error('Tempo de pagamento esgotado.')
-        await fetch(`/api/payment/${transactionId}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ status: 'failed' }),
+      setTimeRemaining(30)
+      timerRef.current = setInterval(() => {
+        setTimeRemaining((prevTime) => {
+          if (prevTime <= 1) {
+            clearInterval(timerRef.current as NodeJS.Timeout)
+            toast.error('Tempo de pagamento esgotado.')
+            fetch(`/api/payment/${transactionId}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ status: 'failed' }),
+            })
+            setIsQRCodeModalOpen(false)
+          }
+          return prevTime - 1
         })
-        setIsQRCodeModalOpen(false)
-      }, 30000)
+      }, 1000)
     } catch (error) {
       console.error('Erro ao criar transação:', error)
       toast.error('Erro ao iniciar a transação. Tente novamente.')
@@ -127,26 +139,33 @@ export default function CoinDetailsPage() {
 
   const checkPaymentStatus = async () => {
     if (transactionId) {
-      const response = await fetch(`/api/payment/${transactionId}`)
-      const data = await response.json()
+      try {
+        const response = await fetch(`/api/payment/${transactionId}`, {
+          method: 'GET', // Make sure this matches what your API expects
+        })
+        const data = await response.json()
 
-      if (data.status === 'completed') {
-        toast.success('Pagamento concluído!')
-        clearTimeout(timerRef.current as NodeJS.Timeout)
-        setIsQRCodeModalOpen(false)
-        window.open('https://github.com/julioishikawa', '_blank')
-      } else {
-        toast.error('Pagamento não concluído. Tente novamente.')
+        if (data.status === 'completed') {
+          toast.success('Pagamento concluído!')
+          clearTimeout(timerRef.current as NodeJS.Timeout)
+          setIsQRCodeModalOpen(false)
+          window.open('https://github.com/julioishikawa', '_blank')
+        } else {
+          toast.error('Pagamento não concluído. Tente novamente.')
+        }
+      } catch (error) {
+        console.error('Erro ao verificar o status do pagamento:', error)
+        toast.error('Erro ao verificar o status do pagamento. Tente novamente.')
       }
     }
   }
 
   useEffect(() => {
-    if (coin) {
-      fetchCoinDetails(coin, selectedCurrency)
+    if (slug) {
+      fetchCoinDetails(slug, selectedCurrency)
         .then(setDetails)
         .catch(console.error)
-      fetchHourlyData(coin, selectedCurrency)
+      fetchHourlyData(slug, selectedCurrency)
         .then(setHourlyData)
         .catch(console.error)
     }
@@ -156,7 +175,7 @@ export default function CoinDetailsPage() {
         clearTimeout(timerRef.current)
       }
     }
-  }, [coin, selectedCurrency])
+  }, [slug, selectedCurrency])
 
   if (!details || hourlyData.length === 0) {
     return <CoinLoading />
@@ -285,6 +304,9 @@ export default function CoinDetailsPage() {
 
             <p className="text-sm text-zinc-400 mt-4">
               Escaneie o código para completar o pagamento.
+            </p>
+            <p className="text-sm text-red-500 mt-2">
+              Tempo restante: {timeRemaining} segundos
             </p>
             <button
               className="mt-5 px-4 py-2 bg-green-600 text-white rounded"
