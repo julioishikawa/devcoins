@@ -20,7 +20,9 @@ model User {
 
   sessions     Session[]
   accounts     Account[]
-  transactions Transaction[] // Relacionamento com Transações
+  transactions Transaction[]
+  purchases    Purchase[]
+  balances     Balance[]
 
   @@map("users")
 }
@@ -33,6 +35,7 @@ model Session {
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
+  @@index([user_id])
   @@map("sessions")
 }
 
@@ -53,18 +56,20 @@ model Account {
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([provider, provider_account_id])
+  @@index([user_id])
   @@map("accounts")
 }
 
 model Transaction {
-  id        String            @id @default(uuid())
-  status    TransactionStatus @default(pending)
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  id         String            @id @default(uuid())
+  status     TransactionStatus @default(pending)
+  created_at DateTime          @default(now())
+  updated_at DateTime          @default(now())
 
   user_id String
   user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
+  @@index([user_id])
   @@map("transactions")
 }
 
@@ -72,4 +77,47 @@ enum TransactionStatus {
   pending
   completed
   failed
+}
+
+model Purchase {
+  id              String          @id @default(uuid())
+  quantity        Int
+  total_price     Float
+  coin_name       String
+  coin_code       String
+  currency_symbol CurrencySymbols @default(BRL)
+  created_at      DateTime        @default(now())
+
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+  @@map("purchases")
+}
+
+enum CurrencySymbols {
+  BRL
+  USD
+  EUR
+  GBP
+  JPY
+  AUD
+  CAD
+  CHF
+  CNY
+  SEK
+  NZD
+}
+
+model Balance {
+  id        String @id @default(uuid())
+  coin_code String
+  quantity  Float
+
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id])
+
+  @@unique([user_id, coin_code])
+  @@index([user_id])
+  @@map("balances")
 }

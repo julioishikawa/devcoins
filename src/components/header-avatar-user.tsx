@@ -10,7 +10,7 @@ interface User {
   name: string
 }
 
-export function UserAvatar() {
+export function HeaderAvatarUser() {
   const [user, setUser] = useState<User | null>(null)
   const router = useRouter()
 

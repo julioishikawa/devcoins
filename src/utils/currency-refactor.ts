@@ -40,20 +40,24 @@ export async function fetchConversionRate(
     )
     return response.data.rates[targetCurrency]
   } catch (error: any) {
-    toast.error('Erro ao buscar a taxa de conversão', error)
+    toast.error('Erro ao buscar a taxa de conversão')
     return 1
   }
 }
 
 export function formatCurrency(
-  value: number,
+  value: number | undefined | null,
   currencySymbol: string = ''
 ): string {
+  if (value === undefined || value === null) {
+    return 'Carregando...'
+  }
+
   const formattedValue = value.toFixed(2)
 
   const [integerPart, decimalPart] = formattedValue.split('.')
 
-  const integerWithCommas = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  const integerWithCommas = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 
   return `${currencySymbol}${integerWithCommas},${decimalPart}`
 }

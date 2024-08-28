@@ -17,7 +17,7 @@ import { fetchCoinDetails, topCoins } from '@/utils/fetch-coin-details'
 
 interface CoinDetails {
   name: string
-  symbol: string
+  code: string
   imageUrl: string
 }
 
@@ -46,10 +46,10 @@ export function CoinCarousel() {
       try {
         const details = await Promise.all(
           topCoins.map(async (coin) => {
-            const detail = await fetchCoinDetails(coin.symbol, 'USD')
+            const detail = await fetchCoinDetails(coin.code, 'USD')
             return {
               name: detail.name,
-              symbol: detail.symbol,
+              code: detail.code,
               imageUrl: detail.imageUrl,
             }
           })
@@ -76,10 +76,10 @@ export function CoinCarousel() {
       <CarouselContent>
         {coinDetails.map((coin) => (
           <CarouselItem
-            key={coin.symbol}
+            key={coin.code}
             className="basis-1/1 sm:basis-1/1 md:basis-1/4 lg:basis-1/6"
           >
-            <Link href={`/cryptocoin/${coin.symbol}`}>
+            <Link href={`/cryptocoin/${coin.code}`}>
               <div className="p-2 border-none cursor-pointer">
                 <Card className="border-none bg-zinc-800 min-w-[112px]">
                   <CardContent className="flex aspect-square items-center justify-center p-6 bg-zinc-800 rounded">

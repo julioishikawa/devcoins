@@ -1,6 +1,6 @@
 import { Skeleton } from '@/components/ui/skeleton'
 
-export default function ProfileLoading() {
+export default function UpdateProfileLoading() {
   return (
     <div className="h-screen flex flex-col justify-between">
       <header className="flex items-center gap-5 p-4">

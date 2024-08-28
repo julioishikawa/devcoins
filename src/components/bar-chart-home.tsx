@@ -5,6 +5,7 @@ import {
   ChartTooltipContent,
   ChartLegendContent,
 } from './ui/chart'
+import { topCoins } from '@/utils/fetch-coin-details'
 
 interface BarChartData {
   date: string
@@ -23,7 +24,9 @@ export function BarChartComponent({
   config,
   selectedCoin,
 }: BarChartComponentProps) {
-  const fillColor = config[selectedCoin]?.color || '#8884d8'
+  const coinCoe =
+    topCoins.find((coin) => coin.name === selectedCoin)?.code || selectedCoin
+  const color = config[coinCoe]?.color || '#8884d8'
 
   return (
     <ChartContainer config={config} className="w-full h-[500px]">
@@ -41,7 +44,7 @@ export function BarChartComponent({
         />
         <Bar
           dataKey="value"
-          fill={fillColor}
+          fill={color}
           name="Fechamento:&nbsp;"
           barSize={30}
           isAnimationActive={true}

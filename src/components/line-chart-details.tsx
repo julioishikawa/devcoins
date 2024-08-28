@@ -14,6 +14,7 @@ import {
   ChartTooltipContent,
   ChartLegendContent,
 } from './ui/chart'
+import { topCoins } from '@/utils/fetch-coin-details'
 
 interface HourlyData {
   time: string
@@ -31,7 +32,9 @@ export function LineChartComponent({
   config,
   selectedCoin,
 }: LineChartComponentProps) {
-  const color = config[selectedCoin]?.color || '#8884d8'
+  const coinCode =
+    topCoins.find((coin) => coin.name === selectedCoin)?.code || selectedCoin
+  const color = config[coinCode]?.color || '#8884d8'
 
   return (
     <ChartContainer config={config} className="w-full max-h-[700px]">

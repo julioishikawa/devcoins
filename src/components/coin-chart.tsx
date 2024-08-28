@@ -14,10 +14,11 @@ import { LineChartComponent } from './line-chart-home'
 import { ChartData, fetchDailyData } from '@/utils/fetch-daily-data'
 import { supportedCurrencies } from '@/utils/currency-refactor'
 import { topCoins, config } from '@/utils/fetch-coin-details'
+import CurrencySelect from './currency-select'
 
 export function CoinChart() {
   const [dailyData, setDailyData] = useState<ChartData[]>([])
-  const [selectedCoin, setSelectedCoin] = useState<string>(topCoins[0].symbol) // Usando o símbolo da primeira moeda como padrão
+  const [selectedCoin, setSelectedCoin] = useState<string>(topCoins[0].code) // Usando o símbolo da primeira moeda como padrão
   const [selectedCurrency, setSelectedCurrency] = useState<string>('BRL')
   const [chartType, setChartType] = useState<'bar' | 'line'>('bar')
 
@@ -59,25 +60,17 @@ export function CoinChart() {
           </SelectTrigger>
           <SelectContent>
             {topCoins.map((coin) => (
-              <SelectItem key={coin.symbol} value={coin.symbol}>
-                {coin.name} ({coin.symbol})
+              <SelectItem key={coin.code} value={coin.code}>
+                {coin.name} ({coin.code})
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
-        <Select onValueChange={handleCurrencyChange} value={selectedCurrency}>
-          <SelectTrigger className="bg-zinc-800 border-none">
-            <SelectValue placeholder="Selecione a moeda" />
-          </SelectTrigger>
-          <SelectContent>
-            {supportedCurrencies.map((currency) => (
-              <SelectItem key={currency} value={currency}>
-                {currency}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <CurrencySelect
+          selectedCurrency={selectedCurrency}
+          onCurrencyChange={setSelectedCurrency}
+        />
 
         <Select
           onValueChange={(value) => setChartType(value as 'bar' | 'line')}

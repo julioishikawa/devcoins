@@ -4,23 +4,21 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { toast } from 'sonner'
 import QRCode from 'qrcode.react'
+import { useRouter } from 'next/navigation'
 
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { LineChartComponent } from '@/components/line-chart-details'
 import Header from '@/components/header'
 import Footer from '@/components/footer'
 import { formatLargeNumber } from '@/utils/format-large-number'
-import { currencySymbols, supportedCurrencies } from '@/utils/currency-refactor'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { fetchCoinDetails, config } from '@/utils/fetch-coin-details'
+import { currencySymbols } from '@/utils/currency-refactor'
+import { config, fetchCoinDetails } from '@/utils/fetch-coin-details'
 import { fetchHourlyData } from '@/utils/fetch-coin-hour'
 import CoinLoading from './loading'
+import { MinusIcon, Plus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { CurrencySymbols } from '@prisma/client'
+import CurrencySelect from '@/components/currency-select'
 
 interface CoinsProps {
   params: {
@@ -30,6 +28,7 @@ interface CoinsProps {
 
 interface CoinDetails {
   name: string
+  code: string
   price: number
   marketCap: number
   volume24h: number
@@ -45,15 +44,26 @@ interface HourlyData {
 
 export default function CoinDetailsPage({ params }: CoinsProps) {
   const { slug } = params
+  const router = useRouter()
+
   const [coin, setCoin] = useState<CoinDetails | null>(null)
   const [hourlyData, setHourlyData] = useState<HourlyData[]>([])
   const [selectedCurrency, setSelectedCurrency] = useState<string>('BRL')
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false)
   const [isQRCodeModalOpen, setIsQRCodeModalOpen] = useState(false)
   const [transactionId, setTransactionId] = useState<string | null>(null)
+  const [coinQuantity, setCoinQuantity] = useState<number>(1)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
   const paymentUrlWithId = `/api/payment/${transactionId}`
+
+  const incrementQuantity = () => {
+    setCoinQuantity((prev) => prev + 1)
+  }
+
+  const decrementQuantity = () => {
+    setCoinQuantity((prev) => (prev > 1 ? prev - 1 : 1))
+  }
 
   async function fetchUserId() {
     try {
@@ -79,6 +89,11 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
 
       if (!userId) {
         throw new Error('User ID not found')
+      }
+
+      // Validação para garantir que selectedCurrency é um valor válido do enum
+      if (!(selectedCurrency in CurrencySymbols)) {
+        throw new Error('Invalid currency selected')
       }
 
       const response = await fetch('/api/payment', {
@@ -127,9 +142,36 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
         const data = await response.json()
 
         if (data.status === 'completed') {
-          toast.success('Pagamento concluído!')
-          setIsQRCodeModalOpen(false)
-          window.open('https://github.com/julioishikawa', '_blank')
+          if (timerRef.current) {
+            clearTimeout(timerRef.current)
+            timerRef.current = null
+          }
+
+          const enumCurrencySymbols = selectedCurrency as CurrencySymbols
+
+          const purchaseResponse = await fetch('/api/purchase', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: await fetchUserId(),
+              quantity: coinQuantity,
+              coinCode: coin?.code,
+              selectedCurrency: enumCurrencySymbols,
+            }),
+          })
+
+          if (purchaseResponse.ok) {
+            toast.success('Compra registrada com sucesso!')
+            setIsQRCodeModalOpen(false)
+            window.open('https://github.com/julioishikawa', '_blank')
+            router.push('/profile')
+          } else {
+            const errorData = await purchaseResponse.json()
+            console.error('Erro ao registrar a compra:', errorData)
+            toast.error('Erro ao registrar a compra. Tente novamente.')
+          }
         } else {
           toast.error('Pagamento não concluído. Tente novamente.')
         }
@@ -141,7 +183,6 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
   }
 
   async function handleClosePaymentModal() {
-    // Limpa o temporizador se existir
     if (timerRef.current) {
       clearTimeout(timerRef.current)
       timerRef.current = null
@@ -149,7 +190,6 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
 
     if (transactionId) {
       try {
-        // Faz a requisição para atualizar o status para 'failed'
         await fetch(`/api/payment/${transactionId}`, {
           method: 'POST',
           headers: {
@@ -191,23 +231,11 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
       <main className="px-10 lg:px-20 flex flex-col gap-10">
         <div className="flex flex-col items-center lg:flex-row gap-10">
           <div className="flex flex-col gap-5 md:justify-center items-center lg:items-start min-w-[180px] lg:max-w-[400px]">
-            <div>
-              <Select
-                onValueChange={setSelectedCurrency}
-                value={selectedCurrency}
-              >
-                <SelectTrigger className="bg-zinc-800 border-none">
-                  <SelectValue placeholder="Selecione a moeda" />
-                </SelectTrigger>
-                <SelectContent>
-                  {supportedCurrencies.map((currency) => (
-                    <SelectItem key={currency} value={currency}>
-                      {currency}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <CurrencySelect
+              selectedCurrency={selectedCurrency}
+              onCurrencyChange={setSelectedCurrency}
+            />
+
             <div className="flex items-center gap-4">
               <h1 className="text-3xl font-bold">{coin.name}</h1>
 
@@ -251,12 +279,30 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
               </div>
             </div>
 
-            <button
-              className="mt-5 px-4 py-2 bg-blue-600 text-white rounded"
-              onClick={handleBuyClick}
-            >
-              Comprar {coin.name}
-            </button>
+            <div className="flex gap-5">
+              <div className="flex items-center gap-4">
+                <Button
+                  className="p-0 h-auto bg-zinc-600 hover:bg-zinc-700 text-white"
+                  onClick={decrementQuantity}
+                >
+                  <MinusIcon />
+                </Button>
+                <span className="text-xl">{coinQuantity}</span>
+                <Button
+                  className="p-0 h-auto bg-zinc-600 hover:bg-zinc-700 text-white"
+                  onClick={incrementQuantity}
+                >
+                  <Plus />
+                </Button>
+              </div>
+
+              <Button
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={handleBuyClick}
+              >
+                Comprar {coin.name}
+              </Button>
+            </div>
           </div>
 
           <LineChartComponent
@@ -272,27 +318,28 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
         <DialogContent className="bg-zinc-950">
           <DialogTitle>Confirmar Compra</DialogTitle>
           <p>
-            Você realmente deseja comprar {coin.name} por{' '}
+            Você realmente deseja comprar {coinQuantity} {coin.name}
+            {coinQuantity > 1 ? "'s" : ''} por{' '}
             {currencySymbols[selectedCurrency]}
-            {coin.price.toLocaleString('pt-BR', {
+            {(coin.price * coinQuantity).toLocaleString('pt-BR', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
             ?
           </p>
           <div className="flex justify-end gap-4 mt-4">
-            <button
-              className="px-4 py-2 bg-red-600 text-white rounded"
+            <Button
+              className="bg-red-600 hover:bg-red-700 text-white"
               onClick={() => setIsBuyModalOpen(false)}
             >
               Cancelar
-            </button>
-            <button
-              className="px-4 py-2 bg-green-600 text-white rounded"
+            </Button>
+            <Button
+              className="bg-green-600 hover:bg-green-700 text-white"
               onClick={handleConfirmPurchase}
             >
               Confirmar
-            </button>
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

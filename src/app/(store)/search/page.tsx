@@ -25,10 +25,10 @@ export default async function Search({ searchParams }: SearchProps) {
   const coinsWithDetails = await Promise.all(
     filteredCoins.map(async (coin) => {
       try {
-        const details = await fetchCoinDetails(coin.symbol, 'USD')
+        const details = await fetchCoinDetails(coin.code, 'USD')
         return { ...coin, imageUrl: details.imageUrl }
       } catch (error) {
-        console.error(`Erro ao buscar detalhes para ${coin.symbol}:`, error)
+        console.error(`Erro ao buscar detalhes para ${coin.code}:`, error)
         return { ...coin, imageUrl: null }
       }
     })
@@ -46,9 +46,9 @@ export default async function Search({ searchParams }: SearchProps) {
 
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
             {coinsWithDetails.map((coin) => (
-              <div key={coin.symbol} className="max-w-[112px]">
+              <div key={coin.code} className="max-w-[112px]">
                 <Card className="border-none bg-zinc-800 ">
-                  <Link href={`/cryptocoin/${coin.symbol}`}>
+                  <Link href={`/cryptocoin/${coin.code}`}>
                     <CardContent className="flex aspect-square items-center justify-center p-6 ">
                       {coin.imageUrl ? (
                         <Image

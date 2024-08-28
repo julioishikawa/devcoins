@@ -92,7 +92,9 @@ export default function CloudinaryUploadButton({
     loadCloudinaryWidget()
   }, [onUploadSuccess, signatureEndpoint, uploadPreset])
 
-  const handleClick = () => {
+  const handleClick = (event: React.MouseEvent) => {
+    event.preventDefault()
+
     if (widgetRef.current) {
       widgetRef.current.open()
     }

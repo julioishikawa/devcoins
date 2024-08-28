@@ -2,16 +2,16 @@ import { api } from '@/lib/axios'
 import { fetchConversionRate } from '@/utils/currency-refactor'
 
 export const topCoins = [
-  { name: 'Bitcoin', symbol: 'BTC' },
-  { name: 'Ethereum', symbol: 'ETH' },
-  { name: 'Tether', symbol: 'USDT' },
-  { name: 'Binance Coin', symbol: 'BNB' },
-  { name: 'XRP', symbol: 'XRP' },
-  { name: 'USD Coin', symbol: 'USDC' },
-  { name: 'Cardano', symbol: 'ADA' },
-  { name: 'Solana', symbol: 'SOL' },
-  { name: 'Dogecoin', symbol: 'DOGE' },
-  { name: 'Polygon', symbol: 'MATIC' },
+  { name: 'Bitcoin', code: 'BTC' },
+  { name: 'Ethereum', code: 'ETH' },
+  { name: 'Tether', code: 'USDT' },
+  { name: 'Binance Coin', code: 'BNB' },
+  { name: 'XRP', code: 'XRP' },
+  { name: 'USD Coin', code: 'USDC' },
+  { name: 'Cardano', code: 'ADA' },
+  { name: 'Solana', code: 'SOL' },
+  { name: 'Dogecoin', code: 'DOGE' },
+  { name: 'Polygon', code: 'MATIC' },
 ]
 
 export const config: Record<string, { color: string }> = {
@@ -33,13 +33,16 @@ export function filterTopCoins(query: string) {
   )
 }
 
-export async function fetchCoinDetails(coin: string, selectedCurrency: string) {
-  const upperCoin = coin.toUpperCase()
+export async function fetchCoinDetails(
+  coinCode: string,
+  selectedCurrency: string
+) {
+  const upperCoin = coinCode.toUpperCase()
 
-  const coinData = topCoins.find((c) => c.symbol === upperCoin)
+  const coinData = topCoins.find((c) => c.code === upperCoin)
   if (!coinData) {
     throw new Error(
-      `Moeda ${coin} não está entre as 10 principais criptomoedas.`
+      `Moeda ${upperCoin} não está entre as 10 principais criptomoedas.`
     )
   }
 
@@ -53,7 +56,7 @@ export async function fetchCoinDetails(coin: string, selectedCurrency: string) {
 
   const data = priceResponse.data.DISPLAY?.[upperCoin]?.USD
   if (!data) {
-    throw new Error(`Dados de preço não disponíveis para ${coin}.`)
+    throw new Error(`Dados de preço não disponíveis para ${upperCoin}.`)
   }
 
   const description =
@@ -64,7 +67,7 @@ export async function fetchCoinDetails(coin: string, selectedCurrency: string) {
 
   return {
     name: coinData.name,
-    symbol: upperCoin,
+    code: upperCoin,
     price: parseFloat(data.PRICE.replace(/[^\d.-]/g, '')) * conversionRate,
     marketCap:
       parseFloat(data.MKTCAP.replace(/[^\d.-]/g, '').replace('B', '')) *
