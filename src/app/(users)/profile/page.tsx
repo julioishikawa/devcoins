@@ -11,6 +11,7 @@ import { currencySymbols, formatCurrency } from '@/utils/currency-refactor'
 import CurrencySelect from '@/components/currency-select'
 import ProfileAvatarUser from '@/components/profile-avatar-user'
 import { fetchCoinDetails } from '@/utils/fetch-coin-details'
+import ProfileLoading from './loading'
 
 interface UserProfile {
   id: string
@@ -103,7 +104,7 @@ export default function ProfilePage() {
   }, 0)
 
   if (!user) {
-    return <div>Carregando...</div>
+    return <ProfileLoading />
   }
 
   return (
@@ -111,8 +112,6 @@ export default function ProfilePage() {
       <Header />
 
       <main className="p-10 lg:px-20 flex flex-col items-center gap-10">
-        <h1 className="text-3xl font-bold">Perfil de {user.name}</h1>
-
         <div className="bg-zinc-900 p-6 rounded-lg shadow-lg">
           <div className="flex items-center justify-center gap-5">
             <ProfileAvatarUser name={user.name} avatarUrl={user.avatar} />
