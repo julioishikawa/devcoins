@@ -67,7 +67,7 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
 
   async function fetchUserId() {
     try {
-      const response = await fetch('/api/users/user')
+      const response = await fetch('/api/users/get-user')
       if (!response.ok) {
         throw new Error('Failed to fetch user ID')
       }

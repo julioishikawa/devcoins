@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Card, CardContent } from '@/components/ui/card'
-import LoadingSpinner from './after-search-loading'
+import LoadingSpinner from '../../../components/after-search-loading'
 import { fetchCoinDetails } from '@/utils/fetch-coin-details'
 
 interface Coin {

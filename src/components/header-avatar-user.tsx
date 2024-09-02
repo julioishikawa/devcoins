@@ -17,7 +17,7 @@ export function HeaderAvatarUser() {
   useEffect(() => {
     async function fetchUserData() {
       try {
-        const response = await fetch('/api/users/user')
+        const response = await fetch('/api/users/get-user')
         if (response.ok) {
           const data = await response.json()
 

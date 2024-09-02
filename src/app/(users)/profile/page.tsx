@@ -39,7 +39,7 @@ export default function ProfilePage() {
   useEffect(() => {
     async function fetchUserProfile() {
       try {
-        const response = await fetch('/api/users/user')
+        const response = await fetch('/api/users/get-user')
         if (!response.ok) {
           throw new Error('Erro ao buscar o perfil do usuário')
         }

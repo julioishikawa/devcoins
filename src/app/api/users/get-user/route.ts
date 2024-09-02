@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
-import { prisma } from '@/lib/prisma' // Certifique-se de que você tem o prisma configurado corretamente
+import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
 const userSchema = z.object({
-  id: z.string(), // Inclua o id no schema
+  id: z.string(),
   username: z.string(),
   email: z.string().email(),
   name: z.string(),
@@ -20,13 +20,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
   }
 
-  // Busque o usuário no banco de dados usando o email da sessão
   const user = await prisma.user.findUnique({
     where: {
       email: session.user.email!,
     },
     select: {
-      id: true, // Inclua o id do usuário
+      id: true,
       username: true,
       email: true,
       name: true,
