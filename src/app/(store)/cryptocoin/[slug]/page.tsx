@@ -55,7 +55,7 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
   const [coinQuantity, setCoinQuantity] = useState<number>(1)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
-  const paymentUrlWithId = `/api/payment/${transactionId}`
+  const paymentUrlWithId = `/api/users/payment/${transactionId}`
 
   const incrementQuantity = () => {
     setCoinQuantity((prev) => prev + 1)
@@ -67,7 +67,7 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
 
   async function fetchUserId() {
     try {
-      const response = await fetch('/api/users/get-user')
+      const response = await fetch('/api/users/user-session')
       if (!response.ok) {
         throw new Error('Failed to fetch user ID')
       }
@@ -117,7 +117,7 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
       // Iniciar o temporizador de 30 segundos
       timerRef.current = setTimeout(async () => {
         toast.error('Tempo de pagamento esgotado.')
-        await fetch(`/api/payment/${transactionId}`, {
+        await fetch(`/api/users/payment/${transactionId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -136,7 +136,7 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
   async function checkPaymentStatus() {
     if (transactionId) {
       try {
-        const response = await fetch(`/api/payment/${transactionId}`, {
+        const response = await fetch(`/api/users/payment/${transactionId}`, {
           method: 'GET',
         })
         const data = await response.json()
@@ -190,7 +190,7 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
 
     if (transactionId) {
       try {
-        await fetch(`/api/payment/${transactionId}`, {
+        await fetch(`/api/users/payment/${transactionId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

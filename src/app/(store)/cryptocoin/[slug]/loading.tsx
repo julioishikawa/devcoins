@@ -7,8 +7,8 @@ export default function CoinLoading() {
       <header className="flex items-center gap-5 p-4">
         <Skeleton className="w-44 h-8 px-14" />
         <Skeleton className="w-full h-10" />
-        <Skeleton className="w-12 h-10 rounded-full" />
-        <Skeleton className="w-8 h-8" />
+        <Skeleton className="min-w-10 h-10 rounded-full" />
+        <Skeleton className="w-6 h-6" />
       </header>
 
       <main className="px-10 lg:px-20 flex flex-col gap-10">

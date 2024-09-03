@@ -7,7 +7,7 @@ export default async function Home() {
   await new Promise((resolve) => setTimeout(resolve, 1000))
 
   return (
-    <section className="h-screen flex flex-col justify-between">
+    <div className="h-screen flex flex-col justify-between">
       <Header />
 
       <div className="p-10 sm:px-20 flex flex-col gap-5">
@@ -19,6 +19,6 @@ export default async function Home() {
       </div>
 
       <Footer />
-    </section>
+    </div>
   )
 }

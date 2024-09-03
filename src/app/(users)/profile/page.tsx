@@ -39,7 +39,7 @@ export default function ProfilePage() {
   useEffect(() => {
     async function fetchUserProfile() {
       try {
-        const response = await fetch('/api/users/get-user')
+        const response = await fetch('/api/users/user-session')
         if (!response.ok) {
           throw new Error('Erro ao buscar o perfil do usuário')
         }
@@ -61,7 +61,7 @@ export default function ProfilePage() {
 
     try {
       const response = await fetch(
-        `/api/balances?userId=${user.id}&selectedCurrency=${selectedCurrency}`
+        `/api/users/user-balance?userId=${user.id}&selectedCurrency=${selectedCurrency}`
       )
       if (!response.ok) {
         throw new Error('Failed to fetch user balances')

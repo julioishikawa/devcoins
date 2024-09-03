@@ -6,7 +6,7 @@ import Logo from './logo'
 
 export default function Header() {
   return (
-    <header className="flex items-center gap-5 p-4 bg-zinc-800">
+    <div className="flex items-center gap-5 p-4 bg-zinc-800">
       <Logo />
 
       <SearchInput />
@@ -14,6 +14,6 @@ export default function Header() {
       <HeaderAvatarUser />
 
       <LogoutButton />
-    </header>
+    </div>
   )
 }

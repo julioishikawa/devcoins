@@ -23,7 +23,7 @@ export default function UpdateProfilePage() {
 
   async function fetchProfile() {
     try {
-      const response = await fetch('/api/users/get-user')
+      const response = await fetch('/api/users/user-session')
 
       if (!response.ok) {
         throw new Error('Failed to fetch profile')

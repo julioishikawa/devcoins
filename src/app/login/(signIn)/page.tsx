@@ -42,10 +42,6 @@ export default function SignIn() {
 
   return (
     <div className="flex flex-col items-center p-7 bg-zinc-900 border-2 shadow-lg rounded-lg">
-      <h2 className="text-2xl font-semibold text-gray-100 text-center mb-6">
-        Sign In
-      </h2>
-
       <form onSubmit={handleSubmit} className="w-[350px]">
         <div className="mb-4">
           <label className="block text-gray-100 mb-2" htmlFor="username">

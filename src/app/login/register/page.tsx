@@ -10,21 +10,25 @@ export default function SignUp() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const router = useRouter()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setLoading(true)
 
     toast.dismiss()
 
     if (!username || !name || !email || !password || !confirmPassword) {
       toast.error('Por favor, preencha todos os campos.')
+      setLoading(false)
       return
     }
 
     if (password !== confirmPassword) {
       toast.error('As senhas não coincidem.')
+      setLoading(false)
       return
     }
 
@@ -53,15 +57,13 @@ export default function SignUp() {
       router.push('/login')
     } catch (error: any) {
       toast.error(error.message)
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
     <div className="flex flex-col items-center p-7 bg-zinc-900 border-2 shadow-lg rounded-lg">
-      <h2 className="text-2xl font-semibold text-gray-100 text-center mb-6">
-        Sign Up
-      </h2>
-
       <form onSubmit={handleSubmit} className="w-[350px]">
         <div className="mb-4">
           <label className="block text-gray-100 mb-2" htmlFor="username">
@@ -74,6 +76,7 @@ export default function SignUp() {
             onChange={(e) => setUsername(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg text-gray-900 focus:outline-none focus:ring focus:ring-gray-500"
             placeholder="Escolha seu username"
+            required
           />
         </div>
 
@@ -88,6 +91,7 @@ export default function SignUp() {
             onChange={(e) => setName(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg text-gray-900 focus:outline-none focus:ring focus:ring-gray-500"
             placeholder="Seu nome"
+            required
           />
         </div>
 
@@ -102,6 +106,7 @@ export default function SignUp() {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg text-gray-900 focus:outline-none focus:ring focus:ring-gray-500"
             placeholder="lorem@email.com"
+            required
           />
         </div>
 
@@ -116,6 +121,7 @@ export default function SignUp() {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg text-gray-900 focus:outline-none focus:ring focus:ring-gray-500"
             placeholder="********"
+            required
           />
         </div>
 
@@ -130,14 +136,16 @@ export default function SignUp() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg text-gray-900 focus:outline-none focus:ring focus:ring-gray-500"
             placeholder="********"
+            required
           />
         </div>
 
         <button
           type="submit"
           className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-300"
+          disabled={loading}
         >
-          Registrar
+          {loading ? 'Registrando...' : 'Registrar'}
         </button>
       </form>
 
@@ -146,6 +154,7 @@ export default function SignUp() {
         onClick={() => {
           router.push('/login')
         }}
+        disabled={loading}
       >
         Já tem uma conta?
       </button>
