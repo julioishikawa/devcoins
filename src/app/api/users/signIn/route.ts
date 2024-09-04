@@ -60,6 +60,7 @@ export async function POST(req: NextRequest) {
           email: user.email,
           avatar: user.avatar,
           is_admin: user.is_admin,
+          banned: user.banned,
         },
         secret: process.env.NEXTAUTH_SECRET as string,
       })

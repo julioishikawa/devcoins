@@ -321,20 +321,27 @@ export function DataUsers() {
 
   return (
     <div className="w-full py-5 px-20">
-      <div className="flex items-center py-4 space-x-2">
-        <Input
-          placeholder="Procure pelo usuário"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="max-w-sm bg-black placeholder:text-zinc-300 text-zinc-50"
-        />
-        <Button
-          onClick={handleSearch}
-          className="bg-zinc-700 hover:bg-zinc-600"
-        >
-          Buscar
-        </Button>
+      <div className="w-full flex items-center justify-between py-4">
+        <div className="flex space-x-2">
+          <Input
+            placeholder="Procure pelo usuário"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="max-w-sm bg-black placeholder:text-zinc-300 text-zinc-50"
+          />
+          <Button
+            onClick={handleSearch}
+            className="bg-zinc-700 hover:bg-zinc-600"
+          >
+            Buscar
+          </Button>
+        </div>
+
+        <h1 className="text-zinc-500">
+          *Página totalmente ilustrativa por motivos de{' '}
+          <strong>SEGURANÇA</strong>
+        </h1>
       </div>
 
       <div className="rounded-md border overflow-auto max-h-[600px]">

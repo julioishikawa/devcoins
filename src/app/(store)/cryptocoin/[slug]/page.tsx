@@ -91,12 +91,11 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
         throw new Error('User ID not found')
       }
 
-      // Validação para garantir que selectedCurrency é um valor válido do enum
       if (!(selectedCurrency in CurrencySymbols)) {
         throw new Error('Invalid currency selected')
       }
 
-      const response = await fetch('/api/payment', {
+      const response = await fetch('/api/users/payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

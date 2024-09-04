@@ -3,14 +3,16 @@
 import { useEffect, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useRouter } from 'next/navigation'
+import { Button } from './ui/button'
 
 interface User {
   id: string
   avatar: string
   name: string
+  is_admin: boolean
 }
 
-export function HeaderAvatarUser() {
+export function UserDataHeader() {
   const [user, setUser] = useState<User | null>(null)
   const router = useRouter()
 
@@ -20,7 +22,6 @@ export function HeaderAvatarUser() {
         const response = await fetch('/api/users/user-session')
         if (response.ok) {
           const data = await response.json()
-
           setUser(data)
         } else {
           console.error('Failed to fetch user data')
@@ -39,16 +40,31 @@ export function HeaderAvatarUser() {
     router.push('/profile')
   }
 
+  const handleAdminClick = () => {
+    router.push('/panel')
+  }
+
   return (
-    <Avatar className="cursor-pointer" onClick={handleClick}>
-      <AvatarImage
-        src={avatarUrl}
-        alt={user?.name || 'User Avatar'}
-        className="object-cover"
-      />
-      <AvatarFallback className="bg-zinc-700">
-        {user?.name?.charAt(0)}
-      </AvatarFallback>
-    </Avatar>
+    <div className="flex gap-5">
+      <Avatar className="cursor-pointer" onClick={handleClick}>
+        <AvatarImage
+          src={avatarUrl}
+          alt={user?.name || 'User Avatar'}
+          className="object-cover"
+        />
+        <AvatarFallback className="bg-zinc-700">
+          {user?.name?.charAt(0)}
+        </AvatarFallback>
+      </Avatar>
+
+      {user?.is_admin && (
+        <Button
+          className="bg-zinc-700 hover:bg-zinc-600"
+          onClick={handleAdminClick}
+        >
+          Admin Table
+        </Button>
+      )}
+    </div>
   )
 }

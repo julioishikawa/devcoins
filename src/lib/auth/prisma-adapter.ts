@@ -13,6 +13,7 @@ export function PrismaAdapter(): Adapter {
           username: user.username!,
           password: await bcrypt.hash(user.password!, 10),
           is_admin: user.is_admin,
+          banned: user.banned,
         },
       })
 
@@ -24,6 +25,7 @@ export function PrismaAdapter(): Adapter {
         emailVerified: null,
         avatar: prismaUser.avatar!,
         is_admin: prismaUser.is_admin,
+        banned: prismaUser.banned,
       }
     },
 
@@ -42,6 +44,7 @@ export function PrismaAdapter(): Adapter {
         emailVerified: null,
         avatar: user.avatar!,
         is_admin: user.is_admin,
+        banned: user.banned,
       }
     },
 
@@ -60,6 +63,7 @@ export function PrismaAdapter(): Adapter {
         emailVerified: null,
         avatar: user.avatar!,
         is_admin: user.is_admin,
+        banned: user.banned,
       }
     },
 
@@ -68,7 +72,6 @@ export function PrismaAdapter(): Adapter {
         name: user.name,
         email: user.email,
         avatar: user.avatar,
-        is_admin: user.is_admin,
       }
 
       if (user.password) {
@@ -88,6 +91,7 @@ export function PrismaAdapter(): Adapter {
         emailVerified: null,
         avatar: prismaUser.avatar!,
         is_admin: prismaUser.is_admin,
+        banned: prismaUser.banned,
       }
     },
 
@@ -114,6 +118,7 @@ export function PrismaAdapter(): Adapter {
         emailVerified: null,
         avatar: user.avatar!,
         is_admin: user.is_admin,
+        banned: user.banned,
       }
     },
 
@@ -193,6 +198,7 @@ export function PrismaAdapter(): Adapter {
           emailVerified: null,
           avatar: user.avatar!,
           is_admin: user.is_admin,
+          banned: user.banned,
         },
       }
     },
@@ -210,6 +216,17 @@ export function PrismaAdapter(): Adapter {
         sessionToken: prismaSession.session_token,
         userId: prismaSession.user_id,
         expires: prismaSession.expires,
+      }
+    },
+
+    async deleteSession(sessionToken) {
+      try {
+        await prisma.session.delete({
+          where: { session_token: sessionToken },
+        })
+      } catch (error) {
+        console.error('Erro ao deletar a sessão:', error)
+        throw new Error('Failed to delete session')
       }
     },
   }

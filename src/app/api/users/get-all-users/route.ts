@@ -16,12 +16,12 @@ export async function GET(req: Request) {
           banned: true,
         },
         orderBy: {
-          username: 'asc', // Ordena os usuários por nome de usuário de forma ascendente
+          username: 'asc',
         },
         skip: offset,
         take: limit,
       }),
-      prisma.user.count(), // Conta o número total de usuários
+      prisma.user.count(),
     ])
 
     return NextResponse.json({ users, totalUsers }, { status: 200 })

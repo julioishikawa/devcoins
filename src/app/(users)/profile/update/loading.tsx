@@ -1,21 +1,21 @@
+import HeaderSkeleton from '@/components/header-skeleton'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export default function UpdateProfileLoading() {
   return (
     <div className="h-screen flex flex-col justify-between">
-      <header className="flex items-center gap-5 p-4">
-        <Skeleton className="w-44 h-8 px-14" />
-        <Skeleton className="w-full h-10" />
-        <Skeleton className="min-w-10 h-10 rounded-full" />
-        <Skeleton className="w-6 h-6" />
-      </header>
+      <HeaderSkeleton />
 
       <main className="flex flex-col items-center">
-        <Skeleton className="p-6 rounded-lg shadow-lg max-w-sm w-full h-[445px]">
+        <Skeleton className="p-6 rounded-lg shadow-lg max-w-sm w-full">
           <div className="flex flex-col items-center gap-10">
             <Skeleton className="rounded-full w-20 h-20 shadow-lg" />
 
             <div className="flex flex-col gap-10 w-full">
+              <div>
+                <Skeleton className="w-full h-10 rounded-md shadow-lg" />
+              </div>
+
               <div>
                 <Skeleton className="w-full h-10 rounded-md shadow-lg" />
               </div>

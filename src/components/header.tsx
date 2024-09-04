@@ -1,5 +1,5 @@
 import { SearchInput } from './search-input'
-import { HeaderAvatarUser } from './header-avatar-user'
+import { UserDataHeader } from './user-data-header'
 
 import LogoutButton from './logout-button'
 import Logo from './logo'
@@ -11,7 +11,7 @@ export default function Header() {
 
       <SearchInput />
 
-      <HeaderAvatarUser />
+      <UserDataHeader />
 
       <LogoutButton />
     </div>

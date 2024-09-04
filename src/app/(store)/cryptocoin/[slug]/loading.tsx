@@ -1,15 +1,12 @@
 import React from 'react'
 import { Skeleton } from '@/components/ui/skeleton'
+import HeaderSkeleton from '@/components/header-skeleton'
+import FooterSkeleton from '@/components/footer-skeleton'
 
 export default function CoinLoading() {
   return (
     <section className="flex flex-col justify-between gap-10 h-screen">
-      <header className="flex items-center gap-5 p-4">
-        <Skeleton className="w-44 h-8 px-14" />
-        <Skeleton className="w-full h-10" />
-        <Skeleton className="min-w-10 h-10 rounded-full" />
-        <Skeleton className="w-6 h-6" />
-      </header>
+      <HeaderSkeleton />
 
       <main className="px-10 lg:px-20 flex flex-col gap-10">
         <div className="flex flex-col items-center lg:flex-row gap-10">
@@ -43,11 +40,7 @@ export default function CoinLoading() {
         </div>
       </main>
 
-      <footer>
-        <Skeleton className="p-4">
-          <Skeleton className="h-6 w-1/2 mx-auto" />
-        </Skeleton>
-      </footer>
+      <FooterSkeleton />
     </section>
   )
 }
