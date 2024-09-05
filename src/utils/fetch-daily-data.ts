@@ -1,12 +1,6 @@
 import { api } from '@/lib/axios'
 import { fetchConversionRate } from '@/utils/currency-refactor'
 
-export interface ChartData {
-  date: string
-  value: number
-  minValue: number
-}
-
 interface ApiResponse {
   Data: {
     Data: {

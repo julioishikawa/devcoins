@@ -5,12 +5,6 @@ import Header from '@/components/header'
 import Footer from '@/components/footer'
 import SearchResults from './search-results'
 
-interface SearchProps {
-  searchParams: {
-    q: string
-  }
-}
-
 export default function Search({ searchParams }: SearchProps) {
   const { q: query } = searchParams
 

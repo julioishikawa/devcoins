@@ -16,22 +16,11 @@ import {
 } from './ui/chart'
 import { topCoins } from '@/utils/fetch-coin-details'
 
-interface HourlyData {
-  time: string
-  value: number
-}
-
-interface LineChartComponentProps {
-  data: HourlyData[]
-  config: Record<string, { color: string }>
-  selectedCoin: string
-}
-
 export function LineChartComponent({
   data,
   config,
   selectedCoin,
-}: LineChartComponentProps) {
+}: HourlyLineChartComponentProps) {
   const coinCode =
     topCoins.find((coin) => coin.name === selectedCoin)?.code || selectedCoin
   const color = config[coinCode]?.color || '#8884d8'

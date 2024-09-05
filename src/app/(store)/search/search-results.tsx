@@ -8,22 +8,13 @@ import { Card, CardContent } from '@/components/ui/card'
 import LoadingSpinner from '@/components/loading-spinner'
 import { fetchCoinDetails } from '@/utils/fetch-coin-details'
 
-interface Coin {
-  code: string
-  name: string
-  imageUrl: string | null
-}
-
-interface SearchResultsProps {
-  query: string
-  filteredCoins: Coin[]
-}
-
 export default function SearchResults({
   query,
   filteredCoins,
 }: SearchResultsProps) {
-  const [coinsWithDetails, setCoinsWithDetails] = useState<Coin[] | null>(null)
+  const [coinsWithDetails, setCoinsWithDetails] = useState<SearchCoin[] | null>(
+    null
+  )
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {

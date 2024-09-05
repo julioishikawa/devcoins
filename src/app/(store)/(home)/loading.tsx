@@ -9,7 +9,7 @@ export default function HomeLoading() {
 
       <main className="p-10 sm:px-20">
         <div about="wrapper" className="space-y-4">
-          <Skeleton className="h-6 w-full rounded-md" />
+          <Skeleton className="h-6 w-[300px] rounded-md" />
 
           <div className="inline-flex gap-4 h-10 rounded-md">
             <Skeleton className="w-[134px] h-10 rounded-md" />
@@ -19,7 +19,7 @@ export default function HomeLoading() {
 
           <Skeleton
             about="coin-chart"
-            className="h-[478px] w-full rounded-md"
+            className="h-[500px] w-full rounded-md"
           />
 
           <div about="coin-carousel" className="flex justify-center">

@@ -9,9 +9,9 @@ export default function PanelLoading() {
       <main className="h-full">
         <HeaderSkeleton />
 
-        <div className="w-full py-10 px-20">
+        <div className="w-full py-5 px-20">
           <div className="flex items-center gap-2 py-4">
-            <Skeleton className="w-96 h-10" />
+            <Skeleton className="w-56 h-10" />
             <Skeleton className="w-[79px] h-10" />
           </div>
 

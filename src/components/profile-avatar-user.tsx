@@ -1,10 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
-interface AvatarUserProps {
-  name: string
-  avatarUrl: string
-}
-
 export default function ProfileAvatarUser({
   name,
   avatarUrl,

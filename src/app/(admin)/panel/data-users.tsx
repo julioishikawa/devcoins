@@ -1,5 +1,6 @@
 'use client'
 
+import React, { useEffect, useState } from 'react'
 import {
   ColumnDef,
   SortingState,
@@ -12,7 +13,6 @@ import {
 } from '@tanstack/react-table'
 import { ArrowUpDown } from 'lucide-react'
 import { toast } from 'sonner'
-import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -25,6 +25,9 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import LoadingSpinner from '@/components/loading-spinner'
+import PanelLoading from './loading'
+import Footer from '@/components/footer'
+import Header from '@/components/header'
 
 export type User = {
   id: string
@@ -39,11 +42,12 @@ export function DataUsers() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
   const [data, setData] = useState<User[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
   const [bannedUsers, setBannedUsers] = useState<{ [key: string]: boolean }>({})
   const [totalUsers, setTotalUsers] = useState<number>(0)
   const [page, setPage] = useState<number>(0)
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(true)
+  const [isSearching, setIsSearching] = useState<boolean>(false)
 
   function ActionCell({
     user,
@@ -118,7 +122,8 @@ export function DataUsers() {
 
   async function fetchUsersAndBalances() {
     try {
-      setLoading(true)
+      setIsSearching(true)
+
       const response = await fetch(
         `/api/users/get-all-users?limit=10&offset=${page * 10}`
       )
@@ -158,16 +163,18 @@ export function DataUsers() {
       setBannedUsers(initialBannedState)
       setData(usersWithAmounts)
       setTotalUsers(totalUsers)
-      setLoading(false)
     } catch (error) {
       console.error('Erro ao buscar os usuários:', error)
+    } finally {
       setLoading(false)
+      setIsSearching(false)
     }
   }
 
   async function searchUsers(query: string) {
     try {
-      setLoading(true)
+      setIsSearching(true)
+
       const response = await fetch(
         `/api/users/users-search?limit=10&offset=${page * 10}&search=${query}`
       )
@@ -207,10 +214,10 @@ export function DataUsers() {
       setBannedUsers(initialBannedState)
       setData(usersWithAmounts)
       setTotalUsers(totalUsers)
-      setLoading(false)
     } catch (error) {
       console.error('Erro ao buscar os usuários:', error)
-      setLoading(false)
+    } finally {
+      setIsSearching(false)
     }
   }
 
@@ -220,7 +227,7 @@ export function DataUsers() {
 
   const handleSearch = () => {
     if (!searchQuery.trim()) {
-      fetchUsersAndBalances() // Se o campo de busca estiver vazio, carrega todos os usuários
+      fetchUsersAndBalances()
       return
     }
     searchUsers(searchQuery)
@@ -314,117 +321,142 @@ export function DataUsers() {
   })
 
   if (loading) {
-    return <LoadingSpinner />
+    return <PanelLoading />
   }
 
   const currentDisplayCount = page * 10 + data.length
 
   return (
-    <div className="w-full py-5 px-20">
-      <div className="w-full flex items-center justify-between py-4">
-        <div className="flex space-x-2">
-          <Input
-            placeholder="Procure pelo usuário"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="max-w-sm bg-black placeholder:text-zinc-300 text-zinc-50"
-          />
-          <Button
-            onClick={handleSearch}
-            className="bg-zinc-700 hover:bg-zinc-600"
-          >
-            Buscar
-          </Button>
-        </div>
+    <section className="h-screen">
+      <main className="flex flex-col h-full justify-between">
+        <div className="flex flex-col h-full">
+          <Header />
 
-        <h1 className="text-zinc-500">
-          *Página totalmente ilustrativa por motivos de{' '}
-          <strong>SEGURANÇA</strong>
-        </h1>
-      </div>
+          <div className="w-full py-5 px-20">
+            <div className="w-full flex items-center justify-between gap-4 py-4">
+              <div className="flex space-x-2">
+                <Input
+                  placeholder="Procure pelo usuário"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="max-w-sm bg-black placeholder:text-zinc-300 text-zinc-50"
+                />
+                <Button
+                  onClick={handleSearch}
+                  className="bg-zinc-700 hover:bg-zinc-600"
+                >
+                  Buscar
+                </Button>
+              </div>
 
-      <div className="rounded-md border overflow-auto max-h-[600px]">
-        <div className="overflow-y-auto">
-          <Table>
-            <TableHeader className="hover:bg-transparent">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id} className="hover:bg-transparent">
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id} className="text-zinc-300">
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    )
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
+              <h1 className="text-zinc-500">
+                *Página totalmente ilustrativa (Não recomendado por motivos de{' '}
+                <strong>SEGURANÇA</strong>)
+              </h1>
+            </div>
 
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && 'selected'}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
+            <div className="rounded-md border overflow-auto max-h-[600px]">
+              <div className="overflow-y-auto">
+                <Table>
+                  <TableHeader className="hover:bg-transparent">
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <TableRow
+                        key={headerGroup.id}
+                        className="hover:bg-transparent"
+                      >
+                        {headerGroup.headers.map((header) => {
+                          return (
+                            <TableHead
+                              key={header.id}
+                              className="text-zinc-300"
+                            >
+                              {header.isPlaceholder
+                                ? null
+                                : flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext()
+                                  )}
+                            </TableHead>
+                          )
+                        })}
+                      </TableRow>
                     ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
+                  </TableHeader>
 
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {currentDisplayCount} of {totalUsers} usuário(s) exibido(s).
+                  <TableBody>
+                    {isSearching ? (
+                      <TableRow>
+                        <TableCell
+                          colSpan={columns.length}
+                          className="text-center"
+                        >
+                          <LoadingSpinner />
+                        </TableCell>
+                      </TableRow>
+                    ) : table.getRowModel().rows.length ? (
+                      table.getRowModel().rows.map((row) => (
+                        <TableRow
+                          key={row.id}
+                          data-state={row.getIsSelected() && 'selected'}
+                        >
+                          {row.getVisibleCells().map((cell) => (
+                            <TableCell key={cell.id}>
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={columns.length}
+                          className="h-24 text-center"
+                        >
+                          Sem resultados
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end space-x-2 py-4">
+              <div className="flex-1 text-sm text-muted-foreground">
+                {currentDisplayCount} of {totalUsers} usuário(s) exibido(s).
+              </div>
+
+              <div className="space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="bg-black"
+                  onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+                  disabled={page === 0 || loading}
+                >
+                  Anterior
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="bg-black"
+                  onClick={() => setPage((prev) => prev + 1)}
+                  disabled={data.length < 10 || loading}
+                >
+                  Próxima
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="bg-black"
-            onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-            disabled={page === 0 || loading}
-          >
-            Anterior
-          </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            className="bg-black"
-            onClick={() => setPage((prev) => prev + 1)}
-            disabled={data.length < 10 || loading}
-          >
-            Próxima
-          </Button>
-        </div>
-      </div>
-    </div>
+        <Footer />
+      </main>
+    </section>
   )
 }

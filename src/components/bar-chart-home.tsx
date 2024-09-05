@@ -7,18 +7,6 @@ import {
 } from './ui/chart'
 import { topCoins } from '@/utils/fetch-coin-details'
 
-interface BarChartData {
-  date: string
-  value: number
-  minValue: number
-}
-
-interface BarChartComponentProps {
-  data: BarChartData[]
-  config: Record<string, { color: string }>
-  selectedCoin: string
-}
-
 export function BarChartComponent({
   data,
   config,

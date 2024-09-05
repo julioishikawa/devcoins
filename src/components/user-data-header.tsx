@@ -5,15 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useRouter } from 'next/navigation'
 import { Button } from './ui/button'
 
-interface User {
-  id: string
-  avatar: string
-  name: string
-  is_admin: boolean
-}
-
 export function UserDataHeader() {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<UserHeader | null>(null)
   const router = useRouter()
 
   useEffect(() => {
