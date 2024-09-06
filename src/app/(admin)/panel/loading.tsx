@@ -1,18 +1,21 @@
 import React from 'react'
 import { Skeleton } from '@/components/ui/skeleton'
-import HeaderSkeleton from '@/components/header-skeleton'
+import HeaderSkeleton from '@/components/header/header-skeleton'
 import FooterSkeleton from '@/components/footer-skeleton'
+import BackButtonSkeleton from '@/components/back-button-skeleton'
 
 export default function PanelLoading() {
   return (
     <section className="flex flex-col justify-between h-screen">
-      <main className="h-full">
+      <main className="">
         <HeaderSkeleton />
 
-        <div className="w-full py-5 px-20">
-          <div className="flex items-center gap-2 py-4">
-            <Skeleton className="w-56 h-10" />
-            <Skeleton className="w-[79px] h-10" />
+        <div className="w-full pt-16 pb-10 px-20">
+          <BackButtonSkeleton />
+
+          <div className="flex flex-col sm:flex-row gap-2 py-4">
+            <Skeleton className="w-[208px] sm:w-56 h-10" />
+            <Skeleton className="w-[208px] sm:w-[79px] h-10" />
           </div>
 
           <Skeleton className="w-full h-[500px]" />

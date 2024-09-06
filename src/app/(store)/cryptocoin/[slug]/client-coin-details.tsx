@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { LineChartComponent } from '@/components/line-chart-details'
-import Header from '@/components/header'
+import Header from '@/components/header/header-component'
 import Footer from '@/components/footer'
 import { formatLargeNumber } from '@/utils/format-large-number'
 import { currencySymbols } from '@/utils/currency-refactor'
@@ -19,6 +19,7 @@ import { MinusIcon, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { CurrencySymbols } from '@prisma/client'
 import CurrencySelect from '@/components/currency-select'
+import BackButton from '@/components/back-button'
 
 export default function CoinDetailsPage({ params }: CoinsProps) {
   const { slug } = params
@@ -202,8 +203,10 @@ export default function CoinDetailsPage({ params }: CoinsProps) {
   }
 
   return (
-    <section className="flex flex-col justify-between gap-10 h-screen">
+    <section className="flex flex-col justify-between gap-20 h-screen">
       <Header />
+
+      <BackButton />
 
       <main className="px-10 lg:px-20 flex flex-col gap-10">
         <div className="flex flex-col items-center lg:flex-row gap-10">

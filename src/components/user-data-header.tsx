@@ -55,7 +55,7 @@ export function UserDataHeader() {
           className="bg-zinc-700 hover:bg-zinc-600"
           onClick={handleAdminClick}
         >
-          Admin Table
+          Painel
         </Button>
       )}
     </div>

@@ -50,7 +50,7 @@ export function formatCurrency(
   currencySymbol: string = ''
 ): string {
   if (value === undefined || value === null) {
-    return 'Carregando...'
+    return 'Fazendo a conversão...'
   }
 
   const formattedValue = value.toFixed(2)

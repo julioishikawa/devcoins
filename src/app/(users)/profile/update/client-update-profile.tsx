@@ -9,7 +9,8 @@ import ProfileAvatarUser from '@/components/profile-avatar-user'
 import ProfileLoading from './loading'
 import { cloudinaryConfig } from '../../../../../cloudinary.config'
 import Footer from '@/components/footer'
-import Header from '@/components/header'
+import Header from '@/components/header/header-component'
+import BackButton from '@/components/back-button'
 
 export default function ClientUpdateProfile() {
   const [profile, setProfile] = useState<any>(null)
@@ -138,6 +139,7 @@ export default function ClientUpdateProfile() {
     <div className="h-screen flex flex-col justify-between">
       <Header />
 
+      <BackButton />
       <section className="p-10 mx-auto">
         <form
           onSubmit={handleSaveChanges}

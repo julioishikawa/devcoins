@@ -27,11 +27,11 @@ export function LineChartComponent({
 
   return (
     <ChartContainer config={config} className="w-full h-[500px]">
-      <ResponsiveContainer>
+      <ResponsiveContainer width="100%">
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
-          <YAxis domain={['auto', 'auto']} padding={{ top: 50, bottom: 0 }} />
+          <YAxis domain={['auto', 'auto']} padding={{ top: 50, bottom: 50 }} />
           <Tooltip content={<ChartTooltipContent />} />
           <Legend content={<ChartLegendContent />} />
           <Line

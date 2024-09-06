@@ -1,8 +1,6 @@
 import { redirect } from 'next/navigation'
 
 import { filterTopCoins } from '@/utils/fetch-coin-details'
-import Header from '@/components/header'
-import Footer from '@/components/footer'
 import SearchResults from './search-results'
 
 export default function Search({ searchParams }: SearchProps) {
@@ -18,10 +16,8 @@ export default function Search({ searchParams }: SearchProps) {
   }))
 
   return (
-    <section className="h-screen flex flex-col">
-      <Header />
+    <>
       <SearchResults query={query} filteredCoins={filteredCoins} />
-      <Footer />
-    </section>
+    </>
   )
 }

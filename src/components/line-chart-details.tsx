@@ -31,7 +31,7 @@ export function LineChartComponent({
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="time" />
-          <YAxis domain={['auto', 'auto']} padding={{ top: 50, bottom: 0 }} />
+          <YAxis domain={['auto', 'auto']} padding={{ top: 50, bottom: 50 }} />
           <Tooltip content={<ChartTooltipContent />} />
           <Legend content={<ChartLegendContent />} />
           <Line

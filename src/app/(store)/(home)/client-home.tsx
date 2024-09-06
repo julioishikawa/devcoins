@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { fetchDailyData } from '@/utils/fetch-daily-data'
 import { topCoins, config } from '@/utils/fetch-coin-details'
-import Header from '@/components/header'
+import Header from '@/components/header/header-component'
 import {
   Select,
   SelectContent,
@@ -27,28 +27,26 @@ export function ClientHomePage() {
 
   const handleCoinChange = useCallback(
     async (coin: string) => {
-      setIsLoading(true) // Inicia o estado de carregamento
+      setIsLoading(false)
       setSelectedCoin(coin)
       const daily = await fetchDailyData(coin, selectedCurrency)
       setDailyData(daily)
-      setIsLoading(false) // Finaliza o carregamento
     },
     [selectedCurrency]
   )
 
   useEffect(() => {
     async function loadInitialData() {
-      setIsLoading(true) // Inicia o estado de carregamento
+      setIsLoading(false)
       const daily = await fetchDailyData(selectedCoin, selectedCurrency)
       setDailyData(daily)
-      setIsLoading(false) // Finaliza o carregamento
     }
 
     loadInitialData()
   }, [selectedCoin, selectedCurrency])
 
   if (isLoading) {
-    return <HomeLoading /> // Exibe o HomeLoading enquanto os dados estão sendo carregados
+    return <HomeLoading />
   }
 
   return (

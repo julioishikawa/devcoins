@@ -1,4 +1,4 @@
-import HeaderSkeleton from '@/components/header-skeleton'
+import HeaderSkeleton from '@/components/header/header-skeleton'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export default function UpdateProfileLoading() {

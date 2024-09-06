@@ -27,7 +27,8 @@ import {
 import LoadingSpinner from '@/components/loading-spinner'
 import PanelLoading from './loading'
 import Footer from '@/components/footer'
-import Header from '@/components/header'
+import Header from '@/components/header/header-component'
+import BackButton from '@/components/back-button'
 
 export type User = {
   id: string
@@ -329,19 +330,22 @@ export function DataUsers() {
   return (
     <section className="h-screen">
       <main className="flex flex-col h-full justify-between">
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col ">
           <Header />
 
-          <div className="w-full py-5 px-20">
+          <BackButton />
+
+          <div className="w-full pt-16 pb-10 px-20">
             <div className="w-full flex items-center justify-between gap-4 py-4">
-              <div className="flex space-x-2">
+              <div className="flex flex-col sm:flex-row gap-2 ">
                 <Input
                   placeholder="Procure pelo usuário"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  className="max-w-sm bg-black placeholder:text-zinc-300 text-zinc-50"
+                  className="min-w-52 bg-black placeholder:text-zinc-300 text-zinc-50"
                 />
+
                 <Button
                   onClick={handleSearch}
                   className="bg-zinc-700 hover:bg-zinc-600"
@@ -356,73 +360,68 @@ export function DataUsers() {
               </h1>
             </div>
 
-            <div className="rounded-md border overflow-auto max-h-[600px]">
-              <div className="overflow-y-auto">
-                <Table>
-                  <TableHeader className="hover:bg-transparent">
-                    {table.getHeaderGroups().map((headerGroup) => (
-                      <TableRow
-                        key={headerGroup.id}
-                        className="hover:bg-transparent"
-                      >
-                        {headerGroup.headers.map((header) => {
-                          return (
-                            <TableHead
-                              key={header.id}
-                              className="text-zinc-300"
-                            >
-                              {header.isPlaceholder
-                                ? null
-                                : flexRender(
-                                    header.column.columnDef.header,
-                                    header.getContext()
-                                  )}
-                            </TableHead>
-                          )
-                        })}
-                      </TableRow>
-                    ))}
-                  </TableHeader>
+            <div className="max-h-[600px] rounded-md border overflow-auto scrollbar">
+              <Table>
+                <TableHeader className="hover:bg-transparent">
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow
+                      key={headerGroup.id}
+                      className="hover:bg-transparent"
+                    >
+                      {headerGroup.headers.map((header) => {
+                        return (
+                          <TableHead key={header.id} className="text-zinc-300">
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext()
+                                )}
+                          </TableHead>
+                        )
+                      })}
+                    </TableRow>
+                  ))}
+                </TableHeader>
 
-                  <TableBody>
-                    {isSearching ? (
-                      <TableRow>
-                        <TableCell
-                          colSpan={columns.length}
-                          className="text-center"
-                        >
-                          <LoadingSpinner />
-                        </TableCell>
+                <TableBody>
+                  {isSearching ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length}
+                        className="text-center"
+                      >
+                        <LoadingSpinner />
+                      </TableCell>
+                    </TableRow>
+                  ) : table.getRowModel().rows.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() && 'selected'}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        ))}
                       </TableRow>
-                    ) : table.getRowModel().rows.length ? (
-                      table.getRowModel().rows.map((row) => (
-                        <TableRow
-                          key={row.id}
-                          data-state={row.getIsSelected() && 'selected'}
-                        >
-                          {row.getVisibleCells().map((cell) => (
-                            <TableCell key={cell.id}>
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell
-                          colSpan={columns.length}
-                          className="h-24 text-center"
-                        >
-                          Sem resultados
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length}
+                        className="h-24 text-center"
+                      >
+                        Sem resultados
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
             </div>
 
             <div className="flex items-center justify-end space-x-2 py-4">
