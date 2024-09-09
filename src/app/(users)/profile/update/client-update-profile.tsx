@@ -23,6 +23,7 @@ export default function ClientUpdateProfilePage() {
   const [isModified, setIsModified] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+
   const [isGoogleUser, setIsGoogleUser] = useState(false)
 
   async function fetchProfile() {
@@ -35,14 +36,11 @@ export default function ClientUpdateProfilePage() {
 
       const data = await response.json()
 
-      console.log('User profile data:', data)
-
       setProfile(data)
       setInitialProfile(data)
       setUsername(data.username)
       setEmail(data.email)
       setName(data.name)
-
       setIsGoogleUser(data.isGoogleUser)
     } catch (err: any) {
       toast.error(err.message)

@@ -6,7 +6,9 @@ import { z } from 'zod'
 
 const userSchema = z.object({
   id: z.string(),
+
   username: z.string().optional(),
+
   email: z.string().email(),
   name: z.string(),
   avatar: z.string().nullable().optional(),
@@ -21,7 +23,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
   }
 
-  // Primeiro, buscamos o usuário
   const user = await prisma.user.findUnique({
     where: {
       email: session.user.email!,

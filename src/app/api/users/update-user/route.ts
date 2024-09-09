@@ -44,7 +44,6 @@ export async function PUT(req: NextRequest) {
 
     const { username, name, email, password, avatar } = result.data
 
-    // Verificar se o username já está em uso por outro usuário
     const existingUsername = await prisma.user.findUnique({
       where: { username },
     })
@@ -56,7 +55,6 @@ export async function PUT(req: NextRequest) {
       )
     }
 
-    // Verificar se o email já está em uso por outro usuário
     const existingEmail = await prisma.user.findUnique({
       where: { email },
     })
