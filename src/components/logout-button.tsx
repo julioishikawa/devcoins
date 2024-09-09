@@ -14,7 +14,7 @@ export default function LogoutButton() {
 
   return (
     <LogOut
-      className="cursor-pointer text-zinc-500 hover:text-zinc-300"
+      className="min-h-5 min-w-5 cursor-pointer text-zinc-500 hover:text-zinc-300"
       onClick={handleLogout}
     />
   )

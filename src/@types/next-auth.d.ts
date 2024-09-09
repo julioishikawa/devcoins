@@ -9,6 +9,7 @@ declare module 'next-auth' {
     password?: string
     avatar: string
     is_admin: boolean
+    banned: boolean
   }
 
   interface Session {

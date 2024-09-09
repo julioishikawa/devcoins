@@ -1,10 +1,14 @@
+import Footer from '@/components/footer'
 import { ReactNode } from 'react'
 
 export default function LoginLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex flex-col items-center">
-      <h1 className="w-full p-20 text-center">LOGO</h1>
-      {children}
-    </div>
+    <section className="flex flex-col h-screen justify-between">
+      <h1 className="p-4 bg-zinc-800 text-white text-center">LOGO</h1>
+
+      <div className="flex flex-col items-center">{children}</div>
+
+      <Footer />
+    </section>
   )
 }

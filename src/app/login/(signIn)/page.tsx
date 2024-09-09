@@ -3,6 +3,8 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { signIn } from 'next-auth/react'
+import { FcGoogle } from 'react-icons/fc'
 
 export default function SignIn() {
   const [username, setUsername] = useState('')
@@ -40,12 +42,12 @@ export default function SignIn() {
     }
   }
 
+  async function handleGoogleSignIn() {
+    signIn('google')
+  }
+
   return (
     <div className="flex flex-col items-center p-7 bg-zinc-900 border-2 shadow-lg rounded-lg">
-      <h2 className="text-2xl font-semibold text-gray-100 text-center mb-6">
-        Sign In
-      </h2>
-
       <form onSubmit={handleSubmit} className="w-[350px]">
         <div className="mb-4">
           <label className="block text-gray-100 mb-2" htmlFor="username">
@@ -87,6 +89,14 @@ export default function SignIn() {
           {loading ? 'Entrando...' : 'Entrar'}
         </button>
       </form>
+
+      <button
+        onClick={handleGoogleSignIn}
+        className="w-full bg-red-800 text-white py-2 mt-4 rounded-lg hover:bg-red-900 transition duration-300 flex items-center justify-center"
+      >
+        <FcGoogle className="mr-2" />
+        Entrar com Google
+      </button>
 
       <button
         className="font-semibold text-gray-100 hover:text-gray-300 mt-6"

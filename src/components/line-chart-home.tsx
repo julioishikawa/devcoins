@@ -16,33 +16,22 @@ import {
 } from './ui/chart'
 import { topCoins } from '@/utils/fetch-coin-details'
 
-interface DailyData {
-  date: string
-  value: number
-}
-
-interface LineChartComponentProps {
-  data: DailyData[]
-  config: Record<string, { color: string }>
-  selectedCoin: string
-}
-
 export function LineChartComponent({
   data,
   config,
   selectedCoin,
-}: LineChartComponentProps) {
+}: DailyLineChartComponentProps) {
   const coinCode =
     topCoins.find((coin) => coin.name === selectedCoin)?.code || selectedCoin
   const color = config[coinCode]?.color || '#8884d8'
 
   return (
     <ChartContainer config={config} className="w-full h-[500px]">
-      <ResponsiveContainer>
+      <ResponsiveContainer width="100%">
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
-          <YAxis domain={['auto', 'auto']} padding={{ top: 50, bottom: 0 }} />
+          <YAxis domain={['auto', 'auto']} padding={{ top: 50, bottom: 50 }} />
           <Tooltip content={<ChartTooltipContent />} />
           <Legend content={<ChartLegendContent />} />
           <Line

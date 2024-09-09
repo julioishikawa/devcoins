@@ -15,12 +15,15 @@ interface CloudinaryUploadButtonProps {
   signatureEndpoint: string
   uploadPreset: string
   className?: string
+  disabled?: boolean
 }
 
 export default function CloudinaryUploadButton({
   onUploadSuccess,
   signatureEndpoint,
   uploadPreset,
+  className,
+  disabled = false,
 }: CloudinaryUploadButtonProps) {
   const widgetRef = useRef<any>(null)
 
@@ -103,8 +106,9 @@ export default function CloudinaryUploadButton({
   return (
     <Button
       id="cloudinary-upload-button"
-      className="absolute -bottom-3 -right-1 bg-zinc-600 hover:bg-zinc-500 rounded-full h-10 w-10"
+      className={`absolute -bottom-5 -right-1 bg-zinc-600 hover:bg-zinc-500 rounded-full h-10 w-10 ${className}`}
       onClick={handleClick}
+      disabled={disabled}
     >
       <span className="text-zinc-400">📷</span>
     </Button>

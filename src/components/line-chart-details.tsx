@@ -16,22 +16,11 @@ import {
 } from './ui/chart'
 import { topCoins } from '@/utils/fetch-coin-details'
 
-interface HourlyData {
-  time: string
-  value: number
-}
-
-interface LineChartComponentProps {
-  data: HourlyData[]
-  config: Record<string, { color: string }>
-  selectedCoin: string
-}
-
 export function LineChartComponent({
   data,
   config,
   selectedCoin,
-}: LineChartComponentProps) {
+}: HourlyLineChartComponentProps) {
   const coinCode =
     topCoins.find((coin) => coin.name === selectedCoin)?.code || selectedCoin
   const color = config[coinCode]?.color || '#8884d8'
@@ -42,7 +31,7 @@ export function LineChartComponent({
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="time" />
-          <YAxis domain={['auto', 'auto']} padding={{ top: 50, bottom: 0 }} />
+          <YAxis domain={['auto', 'auto']} padding={{ top: 50, bottom: 50 }} />
           <Tooltip content={<ChartTooltipContent />} />
           <Legend content={<ChartLegendContent />} />
           <Line

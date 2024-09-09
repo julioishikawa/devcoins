@@ -15,14 +15,8 @@ import {
 import { toast } from 'sonner'
 import { fetchCoinDetails, topCoins } from '@/utils/fetch-coin-details'
 
-interface CoinDetails {
-  name: string
-  code: string
-  imageUrl: string
-}
-
 export function CoinCarousel() {
-  const [coinDetails, setCoinDetails] = useState<CoinDetails[]>([])
+  const [coinDetails, setCoinDetails] = useState<CoinCarouselDetails[]>([])
 
   useEffect(() => {
     async function loadCoinDetails() {

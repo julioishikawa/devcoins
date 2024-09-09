@@ -1,27 +1,25 @@
+import FooterSkeleton from '@/components/footer-skeleton'
+import HeaderSkeleton from '@/components/header/header-skeleton'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export default function HomeLoading() {
   return (
     <section className="h-screen flex flex-col justify-between">
-      <header className="flex items-center gap-5 p-4">
-        <Skeleton className="w-44 h-8 px-14" />
-        <Skeleton className="w-full h-10" />
-        <Skeleton className="w-12 h-10 rounded-full" />
-        <Skeleton className="w-8 h-8" />
-      </header>
+      <HeaderSkeleton />
 
       <main className="p-10 sm:px-20">
         <div about="wrapper" className="space-y-4">
-          <Skeleton className="h-6 w-full rounded-md" />
+          <Skeleton className="h-6 w-[300px] rounded-md" />
 
           <div className="inline-flex gap-4 h-10 rounded-md">
+            <Skeleton className="w-[134px] h-10 rounded-md" />
             <Skeleton className="w-[93px] h-10 rounded-md" />
             <Skeleton className="w-[164px] h-10 rounded-md" />
           </div>
 
           <Skeleton
             about="coin-chart"
-            className="h-[478px] w-full rounded-md"
+            className="h-[500px] w-full rounded-md"
           />
 
           <div about="coin-carousel" className="flex justify-center">
@@ -46,11 +44,7 @@ export default function HomeLoading() {
         </div>
       </main>
 
-      <footer>
-        <Skeleton className="p-4">
-          <Skeleton className="h-6 w-1/2 mx-auto" />
-        </Skeleton>
-      </footer>
+      <FooterSkeleton />
     </section>
   )
 }

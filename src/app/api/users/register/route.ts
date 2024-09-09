@@ -34,7 +34,6 @@ export async function POST(request: NextRequest) {
 
     const { username, name, email, password } = result.data
 
-    // Verificação adicional para garantir que todos os campos estão preenchidos
     if (!username || !name || !email || !password) {
       return NextResponse.json(
         { error: 'Todos os campos são obrigatórios.' },
@@ -61,10 +60,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Criação do hash da senha
     const hashedPassword = await hash(password, 10)
 
-    // Criação do usuário no banco de dados
     const user = await prisma.user.create({
       data: {
         username,

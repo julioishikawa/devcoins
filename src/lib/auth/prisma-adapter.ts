@@ -13,6 +13,7 @@ export function PrismaAdapter(): Adapter {
           username: user.username!,
           password: await bcrypt.hash(user.password!, 10),
           is_admin: user.is_admin,
+          banned: user.banned,
         },
       })
 
@@ -24,6 +25,7 @@ export function PrismaAdapter(): Adapter {
         emailVerified: null,
         avatar: prismaUser.avatar!,
         is_admin: prismaUser.is_admin,
+        banned: prismaUser.banned,
       }
     },
 
@@ -42,6 +44,7 @@ export function PrismaAdapter(): Adapter {
         emailVerified: null,
         avatar: user.avatar!,
         is_admin: user.is_admin,
+        banned: user.banned,
       }
     },
 
@@ -60,6 +63,7 @@ export function PrismaAdapter(): Adapter {
         emailVerified: null,
         avatar: user.avatar!,
         is_admin: user.is_admin,
+        banned: user.banned,
       }
     },
 
@@ -68,7 +72,6 @@ export function PrismaAdapter(): Adapter {
         name: user.name,
         email: user.email,
         avatar: user.avatar,
-        is_admin: user.is_admin,
       }
 
       if (user.password) {
@@ -88,6 +91,7 @@ export function PrismaAdapter(): Adapter {
         emailVerified: null,
         avatar: prismaUser.avatar!,
         is_admin: prismaUser.is_admin,
+        banned: prismaUser.banned,
       }
     },
 
@@ -114,6 +118,7 @@ export function PrismaAdapter(): Adapter {
         emailVerified: null,
         avatar: user.avatar!,
         is_admin: user.is_admin,
+        banned: user.banned,
       }
     },
 
@@ -124,46 +129,35 @@ export function PrismaAdapter(): Adapter {
           provider_type: account.type,
           provider: account.provider,
           provider_account_id: account.providerAccountId,
-          refresh_token: account.refresh_token,
-          access_token: account.access_token,
-          access_token_expires_at: account.expires_at,
-          token_type: account.token_type,
-          scope: account.scope,
-          id_token: account.id_token,
-          session_state: account.session_state,
         },
       })
     },
 
     async createSession({ sessionToken, userId, expires }) {
-      try {
-        const existingSession = await prisma.session.findUnique({
-          where: { session_token: sessionToken },
-        })
+      const existingSession = await prisma.session.findFirst({
+        where: { user_id: userId },
+      })
 
-        if (existingSession) {
-          return {
-            userId: existingSession.user_id,
-            sessionToken: existingSession.session_token,
-            expires: existingSession.expires,
-          }
-        }
-
-        const newSession = await prisma.session.create({
-          data: {
-            user_id: userId,
-            expires,
-            session_token: sessionToken,
-          },
-        })
-
+      if (existingSession) {
         return {
-          userId,
-          sessionToken,
-          expires,
+          sessionToken: existingSession.session_token,
+          userId: existingSession.user_id,
+          expires: existingSession.expires,
         }
-      } catch (error) {
-        throw new Error('Failed to create session')
+      }
+
+      const newSession = await prisma.session.create({
+        data: {
+          user_id: userId,
+          session_token: sessionToken,
+          expires,
+        },
+      })
+
+      return {
+        sessionToken: newSession.session_token,
+        userId: newSession.user_id,
+        expires: newSession.expires,
       }
     },
 
@@ -193,6 +187,7 @@ export function PrismaAdapter(): Adapter {
           emailVerified: null,
           avatar: user.avatar!,
           is_admin: user.is_admin,
+          banned: user.banned,
         },
       }
     },
@@ -211,6 +206,12 @@ export function PrismaAdapter(): Adapter {
         userId: prismaSession.user_id,
         expires: prismaSession.expires,
       }
+    },
+
+    async deleteSession(sessionToken) {
+      await prisma.session.delete({
+        where: { session_token: sessionToken },
+      })
     },
   }
 }

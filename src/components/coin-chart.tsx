@@ -11,8 +11,7 @@ import {
 } from './ui/select'
 import { BarChartComponent } from './bar-chart-home'
 import { LineChartComponent } from './line-chart-home'
-import { ChartData, fetchDailyData } from '@/utils/fetch-daily-data'
-import { supportedCurrencies } from '@/utils/currency-refactor'
+import { fetchDailyData } from '@/utils/fetch-daily-data'
 import { topCoins, config } from '@/utils/fetch-coin-details'
 import CurrencySelect from './currency-select'
 
@@ -29,15 +28,6 @@ export function CoinChart() {
       setDailyData(daily)
     },
     [selectedCurrency]
-  )
-
-  const handleCurrencyChange = useCallback(
-    async (currency: string) => {
-      setSelectedCurrency(currency)
-      const daily = await fetchDailyData(selectedCoin, currency)
-      setDailyData(daily)
-    },
-    [selectedCoin]
   )
 
   useEffect(() => {

@@ -4,15 +4,23 @@ import { authOptions } from '../../auth/[...nextauth]/route'
 import { PrismaClient } from '@prisma/client'
 import { encode } from 'next-auth/jwt'
 import { z } from 'zod'
+import bcrypt from 'bcrypt'
 
 const prisma = new PrismaClient()
 
-const userUpdateSchema = z.object({
-  username: z.string().min(1, 'Username é obrigatório'),
-  name: z.string().min(1, 'Nome é obrigatório'),
-  email: z.string().email('Email inválido'),
-  avatar: z.string().url('URL do avatar inválida').optional(),
-})
+const userUpdateSchema = z
+  .object({
+    avatar: z.string().url('URL do avatar inválida').nullable().optional(),
+    username: z.string().min(1, 'Username é obrigatório'),
+    name: z.string().min(1, 'Nome é obrigatório'),
+    email: z.string().email('Email inválido'),
+    password: z.string().optional(),
+    confirmPassword: z.string().optional(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'As senhas não coincidem',
+    path: ['confirmPassword'],
+  })
 
 export async function PUT(req: NextRequest) {
   const session = await getServerSession({ req, ...authOptions })
@@ -34,11 +42,46 @@ export async function PUT(req: NextRequest) {
       )
     }
 
-    const { username, name, email, avatar } = result.data
+    const { username, name, email, password, avatar } = result.data
+
+    // Verificar se o username já está em uso por outro usuário
+    const existingUsername = await prisma.user.findUnique({
+      where: { username },
+    })
+
+    if (existingUsername && existingUsername.id !== session.user.id) {
+      return NextResponse.json(
+        { error: 'Username já está em uso por outro usuário' },
+        { status: 400 }
+      )
+    }
+
+    // Verificar se o email já está em uso por outro usuário
+    const existingEmail = await prisma.user.findUnique({
+      where: { email },
+    })
+
+    if (existingEmail && existingEmail.id !== session.user.id) {
+      return NextResponse.json(
+        { error: 'Email já está em uso por outro usuário' },
+        { status: 400 }
+      )
+    }
+
+    const updateData: any = { username, name, email }
+
+    if (avatar !== undefined) {
+      updateData.avatar = avatar
+    }
+
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10)
+      updateData.password = hashedPassword
+    }
 
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
-      data: { username, name, email, avatar },
+      data: updateData,
     })
 
     const updatedTokenData = {
@@ -47,7 +90,6 @@ export async function PUT(req: NextRequest) {
       name: updatedUser.name,
       email: updatedUser.email,
       avatar: updatedUser.avatar,
-      is_admin: session.user.is_admin,
     }
 
     const currentSessionToken = req.cookies.get(

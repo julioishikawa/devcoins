@@ -1,18 +1,18 @@
+import BackButtonSkeleton from '@/components/back-button-skeleton'
+import FooterSkeleton from '@/components/footer-skeleton'
+import HeaderSkeleton from '@/components/header/header-skeleton'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export default function ProfileLoading() {
   return (
     <div className="h-screen flex flex-col justify-between">
-      <header className="flex items-center gap-5 p-4">
-        <Skeleton className="w-44 h-8 px-14" />
-        <Skeleton className="w-full h-10" />
-        <Skeleton className="w-12 h-10 rounded-full" />
-        <Skeleton className="w-8 h-8" />
-      </header>
+      <HeaderSkeleton />
 
-      <main className="flex flex-col gap-10 items-center">
-        <Skeleton className="p-6 rounded-lg shadow-lg max-w-80 w-full h-[188px]">
-          <div className="flex items-center justify-center gap-5">
+      <BackButtonSkeleton />
+
+      <main className="p-10 lg:px-20 flex flex-col items-center gap-10">
+        <Skeleton className="p-6 rounded-lg shadow-lg max-w-80 w-full h-[332px] sm:h-[188px]">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
             <Skeleton className="rounded-full min-w-20 h-20 shadow-lg" />
 
             <div className="flex flex-col gap-2 w-full">
@@ -22,19 +22,15 @@ export default function ProfileLoading() {
             </div>
           </div>
 
-          <div className="flex gap-5 mt-5">
-            <Skeleton className="w-full h-10 rounded-md shadow-lg" />
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-3 mt-5">
+            <Skeleton className="w-[130px] sm:w-full h-10 rounded-md shadow-lg" />
 
-            <Skeleton className="w-full h-10 rounded-md shadow-lg" />
+            <Skeleton className="w-[120px] sm:w-full h-10 rounded-md shadow-lg" />
           </div>
         </Skeleton>
       </main>
 
-      <footer>
-        <Skeleton className="p-4">
-          <Skeleton className="h-6 w-1/2 mx-auto" />
-        </Skeleton>
-      </footer>
+      <FooterSkeleton />
     </div>
   )
 }

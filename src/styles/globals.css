@@ -7,7 +7,61 @@
   background-color: #3f3f46 !important; /* Substitua por sua cor desejada */
 }
 
-/* Esconder botão "Upload More" */
-.cloudinary-button.cloudinary-button-secondary {
-  display: none !important;
+.scrollbar {
+  -webkit-overflow-scrolling: touch; /* Scroll suave no mobile */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+/* Estilo da barra de rolagem customizada */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1f1f1f; /* Cor da trilha */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #525252; /* Cor da barra de rolagem */
+  border-radius: 10px; /* Borda arredondada */
+  border: 2px solid #1f1f1f; /* Espaçamento interno da barra */
+}
+
+/* Para o Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #525252 #1f1f1f;
+}
+
+/* Para mostrar a barra de rolagem em telas maiores que sm */
+@media (min-width: 640px) {
+  .scrollbar {
+    -webkit-overflow-scrolling: auto;
+    scrollbar-width: thin; /* Firefox */
+  }
+
+  .scrollbar::-webkit-scrollbar {
+    display: block; /* Chrome, Safari, Edge */
+  }
+}
+
+@keyframes dots {
+  0% {
+    content: '.';
+  }
+  33% {
+    content: '..';
+  }
+  66% {
+    content: '...';
+  }
+}
+
+.animate-dots::after {
+  content: '';
+  animation: dots 1s steps(3, end) infinite;
 }

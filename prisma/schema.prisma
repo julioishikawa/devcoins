@@ -14,7 +14,8 @@ model User {
   name       String
   email      String   @unique
   password   String
-  is_admin   Boolean
+  is_admin   Boolean  @default(false)
+  banned     Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
@@ -28,7 +29,7 @@ model User {
 }
 
 model Session {
-  id            String   @id @default(cuid())
+  id            String   @id @default(uuid())
   user_id       String
   expires       DateTime
   session_token String   @unique
@@ -40,18 +41,11 @@ model Session {
 }
 
 model Account {
-  id                      String  @id @default(cuid())
-  user_id                 String
-  provider_type           String
-  provider                String
-  provider_account_id     String
-  refresh_token           String? @db.Text
-  access_token            String? @db.Text
-  access_token_expires_at Int?
-  token_type              String?
-  scope                   String?
-  id_token                String? @db.Text
-  session_state           String?
+  id                  String @id @default(uuid())
+  user_id             String
+  provider_type       String
+  provider            String
+  provider_account_id String
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
