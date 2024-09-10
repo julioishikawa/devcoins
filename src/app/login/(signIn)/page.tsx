@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { signIn } from 'next-auth/react'
 import { FcGoogle } from 'react-icons/fc'
+import { FaGithub, FaLinkedin } from 'react-icons/fa' // Importar o ícone do LinkedIn
 
 export default function SignIn() {
   const [username, setUsername] = useState('')
@@ -44,6 +45,14 @@ export default function SignIn() {
 
   async function handleGoogleSignIn() {
     signIn('google')
+  }
+
+  async function handleGitHubSignIn() {
+    signIn('github')
+  }
+
+  async function handleLinkedInSignIn() {
+    signIn('linkedin') // Função para login via LinkedIn
   }
 
   return (
@@ -90,13 +99,31 @@ export default function SignIn() {
         </button>
       </form>
 
-      <button
-        onClick={handleGoogleSignIn}
-        className="w-full bg-red-800 text-white py-2 mt-4 rounded-lg hover:bg-red-900 transition duration-300 flex items-center justify-center"
-      >
-        <FcGoogle className="mr-2" />
-        Entrar com Google
-      </button>
+      <div className="flex flex-col gap-1 w-full mt-4">
+        <button
+          onClick={handleGoogleSignIn}
+          className="w-full bg-red-800 text-white py-2 rounded-lg hover:bg-red-900 transition duration-300 flex items-center justify-center"
+        >
+          <FcGoogle className="mr-2" />
+          Entrar com Google
+        </button>
+
+        <button
+          onClick={handleGitHubSignIn}
+          className="w-full bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-900 transition duration-300 flex items-center justify-center"
+        >
+          <FaGithub className="mr-2" />
+          Entrar com GitHub
+        </button>
+
+        <button
+          onClick={handleLinkedInSignIn}
+          className="w-full bg-blue-800 text-white py-2 rounded-lg hover:bg-blue-900 transition duration-300 flex items-center justify-center"
+        >
+          <FaLinkedin className="mr-2" />
+          Entrar com LinkedIn
+        </button>
+      </div>
 
       <button
         className="font-semibold text-gray-100 hover:text-gray-300 mt-6"

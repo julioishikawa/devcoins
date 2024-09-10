@@ -6,14 +6,12 @@ import { z } from 'zod'
 
 const userSchema = z.object({
   id: z.string(),
-
   username: z.string().optional(),
-
   email: z.string().email(),
   name: z.string(),
   avatar: z.string().nullable().optional(),
   is_admin: z.boolean(),
-  isGoogleUser: z.boolean(),
+  isOAuthUser: z.boolean(),
 })
 
 export async function GET(req: NextRequest) {
@@ -41,18 +39,20 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ message: 'User not found' }, { status: 404 })
   }
 
-  const account = await prisma.account.findFirst({
+  const accounts = await prisma.account.findMany({
     where: {
       user_id: user.id,
-      provider: 'google',
     },
   })
 
-  const isGoogleUser = !!account
+  // Verificar se há alguma conta associada a um provedor OAuth (ex: Google, GitHub)
+  const isOAuthUser = accounts.some(
+    (account) => account.provider !== 'credentials'
+  )
 
   const userWithAccount = {
     ...user,
-    isGoogleUser,
+    isOAuthUser,
   }
 
   const parsedUser = userSchema.safeParse(userWithAccount)

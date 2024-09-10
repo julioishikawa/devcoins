@@ -23,8 +23,7 @@ export default function ClientUpdateProfilePage() {
   const [isModified, setIsModified] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-
-  const [isGoogleUser, setIsGoogleUser] = useState(false)
+  const [isOAuthUser, setIsOAuthUser] = useState(false)
 
   async function fetchProfile() {
     try {
@@ -41,7 +40,8 @@ export default function ClientUpdateProfilePage() {
       setUsername(data.username)
       setEmail(data.email)
       setName(data.name)
-      setIsGoogleUser(data.isGoogleUser)
+
+      setIsOAuthUser(data.isOAuthUser)
     } catch (err: any) {
       toast.error(err.message)
     } finally {
@@ -182,7 +182,7 @@ export default function ClientUpdateProfilePage() {
                   className="text-lg bg-zinc-900 p-2 rounded-md text-zinc-400 border-none"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  disabled={isGoogleUser || isSaving}
+                  disabled={isOAuthUser || isSaving} // Desabilitar edição de email para usuários OAuth
                 />
               </div>
 
