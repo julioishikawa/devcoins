@@ -11,9 +11,8 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Se o usuário está acessando as páginas de login ou registro
-  if (pathname === '/login' || pathname === '/register') {
+  if (pathname === '/sign-in' || pathname === '/sign-up') {
     if (token) {
-      // Verifica se o usuário está banido
       if (token.banned) {
         return NextResponse.redirect(new URL('/banned', request.url))
       }
@@ -22,17 +21,15 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Se o usuário não está autenticado, redireciona para login
   if (!token) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    return NextResponse.redirect(new URL('/sign-in', request.url))
   }
 
-  // Verifica se o usuário está banido em qualquer rota protegida
   if (token.banned) {
     return NextResponse.redirect(new URL('/banned', request.url))
   }
 
-  // Proteção para rotas do painel de admin
+  // Proteção para rotas do painel de admin (apenas admin)
   if (pathname.startsWith('/panel')) {
     const isAdmin = token.is_admin
 
@@ -46,8 +43,8 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/login',
-    '/register',
+    '/sign-in',
+    '/sign-up',
     '/',
     '/profile',
     '/profile/update',

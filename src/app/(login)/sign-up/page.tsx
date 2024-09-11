@@ -33,7 +33,7 @@ export default function SignUp() {
     }
 
     try {
-      const response = await fetch('/api/users/register', {
+      const response = await fetch('/api/users/sign-up', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ export default function SignUp() {
       }
 
       toast.success('Usuário criado com sucesso!')
-      router.push('/login')
+      router.push('/sign-in')
     } catch (error: any) {
       toast.error(error.message)
     } finally {
@@ -64,10 +64,10 @@ export default function SignUp() {
 
   return (
     <div className="flex flex-col items-center p-7 bg-zinc-900 border-2 shadow-lg rounded-lg">
-      <form onSubmit={handleSubmit} className="w-[350px]">
+      <form onSubmit={handleSubmit} className="sm:w-[350px]">
         <div className="mb-4">
           <label className="block text-gray-100 mb-2" htmlFor="username">
-            Username
+            Usuário
           </label>
           <input
             id="username"
@@ -82,7 +82,7 @@ export default function SignUp() {
 
         <div className="mb-4">
           <label className="block text-gray-100 mb-2" htmlFor="name">
-            Name
+            Nome
           </label>
           <input
             id="name"
@@ -112,7 +112,7 @@ export default function SignUp() {
 
         <div className="mb-4">
           <label className="block text-gray-100 mb-2" htmlFor="password">
-            Password
+            Senha
           </label>
           <input
             id="password"
@@ -127,7 +127,7 @@ export default function SignUp() {
 
         <div className="mb-4">
           <label className="block text-gray-100 mb-2" htmlFor="confirmPassword">
-            Confirm Password
+            Confirmar senha
           </label>
           <input
             id="confirmPassword"
@@ -152,7 +152,7 @@ export default function SignUp() {
       <button
         className="font-semibold text-gray-100 hover:text-gray-300 mt-6"
         onClick={() => {
-          router.push('/login')
+          router.push('/sign-in')
         }}
         disabled={loading}
       >

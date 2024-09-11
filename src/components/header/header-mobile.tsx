@@ -36,7 +36,7 @@ export default function HeaderMobile() {
 
   async function handleLogout() {
     await signOut({ redirect: false })
-    router.push('/login')
+    router.push('/sign-in')
   }
 
   const handleProfileClick = () => {

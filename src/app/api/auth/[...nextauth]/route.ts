@@ -125,7 +125,6 @@ export const authOptions: NextAuthOptions = {
 
       return true
     },
-
     async session({ session, user }) {
       session.user = {
         id: user.id as string,
@@ -141,7 +140,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: '/login',
+    signIn: '/sign-in',
   },
   session: {
     strategy: 'database',

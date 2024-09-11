@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { signIn } from 'next-auth/react'
 import { FcGoogle } from 'react-icons/fc'
-import { FaGithub, FaLinkedin } from 'react-icons/fa' // Importar o ícone do LinkedIn
+import { FaGithub, FaLinkedin } from 'react-icons/fa'
 
 export default function SignIn() {
   const [username, setUsername] = useState('')
@@ -20,7 +20,7 @@ export default function SignIn() {
     toast.dismiss()
 
     try {
-      const response = await fetch('/api/users/signIn', {
+      const response = await fetch('/api/users/sign-in', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,15 +52,15 @@ export default function SignIn() {
   }
 
   async function handleLinkedInSignIn() {
-    signIn('linkedin') // Função para login via LinkedIn
+    signIn('linkedin')
   }
 
   return (
     <div className="flex flex-col items-center p-7 bg-zinc-900 border-2 shadow-lg rounded-lg">
-      <form onSubmit={handleSubmit} className="w-[350px]">
+      <form onSubmit={handleSubmit} className="sm:w-[350px]">
         <div className="mb-4">
           <label className="block text-gray-100 mb-2" htmlFor="username">
-            Username
+            Usuário
           </label>
           <input
             id="username"
@@ -76,7 +76,7 @@ export default function SignIn() {
 
         <div className="mb-4">
           <label className="block text-gray-100 mb-2" htmlFor="password">
-            Password
+            Senha
           </label>
           <input
             id="password"
@@ -102,7 +102,7 @@ export default function SignIn() {
       <div className="flex flex-col gap-1 w-full mt-4">
         <button
           onClick={handleGoogleSignIn}
-          className="w-full bg-red-800 text-white py-2 rounded-lg hover:bg-red-900 transition duration-300 flex items-center justify-center"
+          className="w-full px-2 bg-red-800 text-white py-2 rounded-lg hover:bg-red-900 transition duration-300 flex items-center justify-center"
         >
           <FcGoogle className="mr-2" />
           Entrar com Google
@@ -110,7 +110,7 @@ export default function SignIn() {
 
         <button
           onClick={handleGitHubSignIn}
-          className="w-full bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-900 transition duration-300 flex items-center justify-center"
+          className="w-full px-2 bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-900 transition duration-300 flex items-center justify-center"
         >
           <FaGithub className="mr-2" />
           Entrar com GitHub
@@ -118,7 +118,7 @@ export default function SignIn() {
 
         <button
           onClick={handleLinkedInSignIn}
-          className="w-full bg-blue-800 text-white py-2 rounded-lg hover:bg-blue-900 transition duration-300 flex items-center justify-center"
+          className="w-full px-2 bg-blue-800 text-white py-2 rounded-lg hover:bg-blue-900 transition duration-300 flex items-center justify-center"
         >
           <FaLinkedin className="mr-2" />
           Entrar com LinkedIn
@@ -127,7 +127,7 @@ export default function SignIn() {
 
       <button
         className="font-semibold text-gray-100 hover:text-gray-300 mt-6"
-        onClick={() => router.push('/login/register')}
+        onClick={() => router.push('/sign-up')}
       >
         Registrar-se
       </button>

@@ -6,7 +6,7 @@ export default function LoginLayout({ children }: { children: ReactNode }) {
     <section className="flex flex-col h-screen justify-between">
       <h1 className="p-4 bg-zinc-800 text-white text-center">LOGO</h1>
 
-      <div className="flex flex-col items-center">{children}</div>
+      <div className="flex flex-col items-center px-10">{children}</div>
 
       <Footer />
     </section>

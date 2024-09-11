@@ -14,7 +14,7 @@ export default function BannedPage() {
 
       <Button
         className="bg-red-600 hover:bg-red-500 text-white px-6 py-3 rounded-lg"
-        onClick={() => signOut({ callbackUrl: '/login' })}
+        onClick={() => signOut({ callbackUrl: '/sign-in' })}
       >
         Voltar para o login
       </Button>

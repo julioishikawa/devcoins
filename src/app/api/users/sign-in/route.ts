@@ -6,7 +6,7 @@ import { z } from 'zod'
 
 const prisma = new PrismaClient()
 
-const loginSchema = z.object({
+const signInSchema = z.object({
   username: z.string().min(1, 'Username é obrigatório'),
   password: z.string().min(1, 'Senha é obrigatória'),
 })
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
 
-    const result = loginSchema.safeParse(body)
+    const result = signInSchema.safeParse(body)
 
     if (!result.success) {
       const { errors } = result.error
