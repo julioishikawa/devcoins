@@ -26,6 +26,7 @@ Para uma demonstração completa, a aplicação está online para testes [clique
 - React: Biblioteca JavaScript para construção de interfaces de usuário.
 - Next.js: Framework React para renderização no lado do servidor e rotas.
 - Prisma: ORM (Object-Relational Mapper) para o banco de dados, usado para migrações, - consultas e geração de clientes.
+- Shadcn/UI: Biblioteca de componentes de interface para React, focada em acessibilidade e flexibilidade, com integração fácil a Tailwind CSS.
 - Axios: Biblioteca para fazer requisições HTTP.
 - Bcrypt: Utilizado para hashing de senhas.
 - Cloudinary: Serviço para upload e manipulação de imagens.
